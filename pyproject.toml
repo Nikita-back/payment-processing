@@ -26,7 +26,7 @@ dev = [
     "pytest>=8",
     "pytest-asyncio>=0.24",
     "aiosqlite>=0.20",
-    "testcontainers[postgres,rabbitmq]>=4.8",
+    "testcontainers[postgres]>=4.8",
 ]
 
 [tool.setuptools.packages.find]
@@ -36,6 +36,7 @@ include = ["app*"]
 asyncio_mode = "auto"
 testpaths = ["tests"]
 pythonpath = ["."]
+filterwarnings = ["error"]
 markers = [
     "integration: тесты с PostgreSQL и RabbitMQ",
 ]

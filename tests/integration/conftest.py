@@ -8,7 +8,8 @@ from alembic.config import Config
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import text
 from testcontainers.community.postgres import PostgresContainer
-from testcontainers.community.rabbitmq import RabbitMqContainer
+from testcontainers.core.container import DockerContainer
+from testcontainers.core.wait_strategies import LogMessageWaitStrategy
 
 from app.config import Settings
 from app.db import make_engine
@@ -39,13 +40,18 @@ def database_url():
 
 @pytest.fixture(scope="session")
 def rabbitmq_url():
-    with RabbitMqContainer("rabbitmq:3.13-management-alpine") as rabbit:
-        params = rabbit.get_connection_params()
-        vhost = "" if params.virtual_host == "/" else params.virtual_host
-        yield (
-            f"amqp://{params.credentials.username}:{params.credentials.password}"
-            f"@{params.host}:{params.port}/{vhost}"
-        )
+    container = (
+        DockerContainer("rabbitmq:3.13-management-alpine")
+        .with_exposed_ports(5672)
+        .with_env("RABBITMQ_DEFAULT_USER", "guest")
+        .with_env("RABBITMQ_DEFAULT_PASS", "guest")
+        .with_env("RABBITMQ_DEFAULT_VHOST", "/")
+        .waiting_for(LogMessageWaitStrategy("Server startup complete").with_startup_timeout(60))
+    )
+    with container:
+        host = container.get_container_host_ip()
+        port = container.get_exposed_port(5672)
+        yield f"amqp://guest:guest@{host}:{port}/"
 
 
 @pytest.fixture

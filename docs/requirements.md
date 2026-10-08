@@ -4,13 +4,11 @@
 
 ## Разбор лога
 
-Команда: `pytest -vv --tb=short -rA --log-cli-level=INFO`.
+Команда: `pytest -vv --tb=short -rA --log-cli-level=INFO`. В `pyproject.toml` включено `filterwarnings = ["error"]`: любое предупреждение Python роняет прогон.
 
-Итог в конце лога: `91 passed, 1 warning in 14.86s`. Строк `FAILED` нет. Секция `PASSES` перечисляет все 91 теста по одному.
+Итог в конце лога: `91 passed in 13.76s`. Секций `warnings summary` и строк `FAILED` нет. Секция `PASSES` перечисляет все 91 теста по одному.
 
-Единственное предупреждение — `DeprecationWarning` декоратора `@wait_container_is_ready` внутри пакета `testcontainers`, файл `.venv/.../testcontainers/community/rabbitmq/__init__.py:58`. На поведение сервиса не влияет: контейнер RabbitMQ после этого поднялся, и тесты публикации, consumer и DLQ прошли.
-
-В начале лога много строк `ERROR pika... IncompatibleProtocolError` / `StreamLostError` на `127.0.0.1:32780`. Это зонд готовности контейнера: порт уже открыт, а AMQP-рукопожатие ещё не готово. Зонд повторяет попытку, пока брокер не ответит. После этих строк интеграционные тесты `test_relay_*`, `test_dlq_*` и `test_queue_consumer_marks_success_and_calls_webhook` завершились `PASSED`, то есть брокер к моменту проверок был жив.
+Готовность RabbitMQ ждёт строку `Server startup complete` в логе контейнера. Устаревший декоратор `@wait_container_is_ready` не импортируется, поэтому в логе нет `DeprecationWarning` и нет рукопожатий pika до старта брокера.
 
 В логе нет тел запросов с ключом API и нет текста SQL из обработчика `503`.
 
