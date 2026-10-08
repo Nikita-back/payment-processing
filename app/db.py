@@ -5,14 +5,28 @@ from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 from sqlalchemy.pool import StaticPool
 
 
-def make_engine(database_url: str) -> AsyncEngine:
+def make_engine(
+    database_url: str,
+    *,
+    pool_size: int = 10,
+    max_overflow: int = 20,
+    pool_timeout: float = 30.0,
+    pool_recycle: int = 1800,
+) -> AsyncEngine:
     if database_url.startswith("sqlite"):
         return create_async_engine(
             database_url,
             poolclass=StaticPool,
             connect_args={"check_same_thread": False},
         )
-    return create_async_engine(database_url, pool_pre_ping=True)
+    return create_async_engine(
+        database_url,
+        pool_pre_ping=True,
+        pool_size=pool_size,
+        max_overflow=max_overflow,
+        pool_timeout=pool_timeout,
+        pool_recycle=pool_recycle,
+    )
 
 
 def make_session_factory(engine: AsyncEngine) -> async_sessionmaker[AsyncSession]:

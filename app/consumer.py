@@ -3,7 +3,7 @@ import json
 import logging
 
 from faststream import FastStream
-from faststream.rabbit import ExchangeType, RabbitBroker, RabbitExchange, RabbitMessage, RabbitQueue
+from faststream.rabbit import Channel, ExchangeType, RabbitBroker, RabbitExchange, RabbitMessage, RabbitQueue
 
 from app.config import get_settings
 from app.db import make_engine, make_session_factory, wait_for_schema
@@ -56,7 +56,14 @@ async def serve() -> None:
         settings.retry_base_delay_ms,
         settings.max_delivery_attempts,
     )
-    broker = RabbitBroker(settings.rabbitmq_url)
+    broker = RabbitBroker(
+        settings.rabbitmq_url,
+        default_channel=Channel(
+            prefetch_count=settings.consumer_prefetch,
+            publisher_confirms=True,
+        ),
+        graceful_timeout=30.0,
+    )
     publisher = RabbitPublisher(broker, settings.max_delivery_attempts)
     gateway = PaymentGateway(
         min_delay_seconds=settings.gateway_min_delay_seconds,
@@ -67,8 +74,14 @@ async def serve() -> None:
         attempts=settings.webhook_attempts,
         base_delay_seconds=settings.webhook_retry_base_seconds,
         timeout_seconds=settings.webhook_timeout_seconds,
+        allow_private_networks=settings.webhook_allow_private_networks,
     )
-    processor = PaymentProcessor(session_factory, gateway, webhook)
+    processor = PaymentProcessor(
+        session_factory,
+        gateway,
+        webhook,
+        claim_lease_seconds=settings.gateway_claim_lease_seconds,
+    )
     register_consumer(broker, processor, publisher)
     application = FastStream(broker)
     try:

@@ -3,7 +3,7 @@ import contextlib
 import logging
 from datetime import datetime, timezone
 
-from faststream.rabbit import RabbitBroker
+from faststream.rabbit import Channel, RabbitBroker
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
@@ -44,7 +44,11 @@ async def run_relay(
     session_factory: async_sessionmaker[AsyncSession],
     stop: asyncio.Event,
 ) -> None:
-    broker = RabbitBroker(settings.rabbitmq_url)
+    broker = RabbitBroker(
+        settings.rabbitmq_url,
+        default_channel=Channel(prefetch_count=settings.consumer_prefetch, publisher_confirms=True),
+        graceful_timeout=30.0,
+    )
     publisher = RabbitPublisher(broker, settings.max_delivery_attempts)
     connected = False
     try:

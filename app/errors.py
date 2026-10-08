@@ -12,3 +12,11 @@ class IdempotencyConflictError(Exception):
 
 class WebhookDeliveryError(Exception):
     pass
+
+
+class WebhookURLRejected(Exception):
+    pass
+
+
+class PaymentInProgress(Exception):
+    pass

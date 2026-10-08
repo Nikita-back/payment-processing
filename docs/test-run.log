@@ -1,0 +1,590 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0 -- /home/enigma/MyProjects/job_search/тестовые/payment-processing/.venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /home/enigma/MyProjects/job_search/тестовые/payment-processing
+configfile: pyproject.toml
+testpaths: tests
+plugins: asyncio-1.4.0, anyio-4.15.1
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... 
+----------------------------- live log collection ------------------------------
+INFO alembic.runtime.plugins setup plugin alembic.autogenerate.schemas
+INFO alembic.runtime.plugins setup plugin alembic.autogenerate.tables
+INFO alembic.runtime.plugins setup plugin alembic.autogenerate.types
+INFO alembic.runtime.plugins setup plugin alembic.autogenerate.constraints
+INFO alembic.runtime.plugins setup plugin alembic.autogenerate.defaults
+INFO alembic.runtime.plugins setup plugin alembic.autogenerate.comments
+INFO alembic.runtime.plugins setup plugin alembic.ext.checkconstraint_byname
+collected 91 items
+
+tests/integration/test_api.py::test_create_and_get_payment 
+-------------------------------- live log setup --------------------------------
+INFO testcontainers.core.container Pulling image testcontainers/ryuk:0.8.1
+INFO testcontainers.core.container Container started: da472cf3e362
+INFO testcontainers.core.container Pulling image rabbitmq:3.13-management-alpine
+INFO testcontainers.core.container Container started: 04e25a9ec312
+INFO pika.adapters.utils.connection_workflow Pika version 1.4.4 connecting to ('127.0.0.1', 32780)
+INFO pika.adapters.utils.io_services_utils Socket connected: <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45804), raddr=('127.0.0.1', 32780)>
+INFO pika.adapters.utils.connection_workflow Streaming transport linked up: (<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f8e9164c3b0>, _StreamingProtocolShim: <SelectConnection PROTOCOL transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f8e9164c3b0> params=<ConnectionParameters host=localhost port=32780 virtual_host=/ ssl=False>>).
+ERROR pika.adapters.utils.io_services_utils Socket EOF; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45804)>
+ERROR pika.adapters.base_connection Transport indicated EOF.
+INFO pika.adapters.utils.io_services_utils protocol.eof_received() elected to close: <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45804)>
+INFO pika.adapters.utils.io_services_utils _AsyncTransportBase._initate_abort(): Initiating abrupt asynchronous transport shutdown: state=1; error=None; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45804)>
+INFO pika.adapters.utils.io_services_utils Deactivating transport: state=1; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45804)>
+ERROR pika.adapters.base_connection connection_lost: StreamLostError: ('Transport indicated EOF',)
+INFO pika.connection AMQP stack terminated, failed to connect, or aborted: opened=False, error-arg=StreamLostError: ('Transport indicated EOF',); pending-error=None
+ERROR pika.connection Probably incompatible Protocol Versions
+INFO pika.connection Connection setup terminated due to IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",)
+ERROR pika.adapters.utils.connection_workflow AMQPConnector - reporting failure: AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",)
+ERROR pika.adapters.utils.connection_workflow AMQP connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None.
+ERROR pika.adapters.utils.connection_workflow AMQPConnectionWorkflow - reporting failure: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None
+INFO pika.adapters.utils.io_services_utils Closing transport socket and unlinking: state=3; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45804)>
+ERROR pika.adapters.blocking_connection Connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None
+ERROR pika.adapters.blocking_connection Error in _create_connection().
+Traceback (most recent call last):
+  File "/home/enigma/MyProjects/job_search/тестовые/payment-processing/.venv/lib/python3.12/site-packages/pika/adapters/blocking_connection.py", line 478, in _create_connection
+    raise self._reap_last_connection_workflow_error(error)
+pika.exceptions.IncompatibleProtocolError: StreamLostError: ('Transport indicated EOF',)
+INFO pika.adapters.utils.connection_workflow Pika version 1.4.4 connecting to ('127.0.0.1', 32780)
+INFO pika.adapters.utils.io_services_utils Socket connected: <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45816), raddr=('127.0.0.1', 32780)>
+INFO pika.adapters.utils.connection_workflow Streaming transport linked up: (<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f8e9164d6d0>, _StreamingProtocolShim: <SelectConnection PROTOCOL transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f8e9164d6d0> params=<ConnectionParameters host=localhost port=32780 virtual_host=/ ssl=False>>).
+ERROR pika.adapters.utils.io_services_utils Socket EOF; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45816)>
+ERROR pika.adapters.base_connection Transport indicated EOF.
+INFO pika.adapters.utils.io_services_utils protocol.eof_received() elected to close: <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45816)>
+INFO pika.adapters.utils.io_services_utils _AsyncTransportBase._initate_abort(): Initiating abrupt asynchronous transport shutdown: state=1; error=None; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45816)>
+INFO pika.adapters.utils.io_services_utils Deactivating transport: state=1; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45816)>
+ERROR pika.adapters.base_connection connection_lost: StreamLostError: ('Transport indicated EOF',)
+INFO pika.connection AMQP stack terminated, failed to connect, or aborted: opened=False, error-arg=StreamLostError: ('Transport indicated EOF',); pending-error=None
+ERROR pika.connection Probably incompatible Protocol Versions
+INFO pika.connection Connection setup terminated due to IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",)
+ERROR pika.adapters.utils.connection_workflow AMQPConnector - reporting failure: AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",)
+ERROR pika.adapters.utils.connection_workflow AMQP connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None.
+ERROR pika.adapters.utils.connection_workflow AMQPConnectionWorkflow - reporting failure: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None
+INFO pika.adapters.utils.io_services_utils Closing transport socket and unlinking: state=3; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45816)>
+ERROR pika.adapters.blocking_connection Connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None
+ERROR pika.adapters.blocking_connection Error in _create_connection().
+Traceback (most recent call last):
+  File "/home/enigma/MyProjects/job_search/тестовые/payment-processing/.venv/lib/python3.12/site-packages/pika/adapters/blocking_connection.py", line 478, in _create_connection
+    raise self._reap_last_connection_workflow_error(error)
+pika.exceptions.IncompatibleProtocolError: StreamLostError: ('Transport indicated EOF',)
+INFO pika.adapters.utils.connection_workflow Pika version 1.4.4 connecting to ('127.0.0.1', 32780)
+INFO pika.adapters.utils.io_services_utils Socket connected: <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45818), raddr=('127.0.0.1', 32780)>
+INFO pika.adapters.utils.connection_workflow Streaming transport linked up: (<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f8e9164e2d0>, _StreamingProtocolShim: <SelectConnection PROTOCOL transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f8e9164e2d0> params=<ConnectionParameters host=localhost port=32780 virtual_host=/ ssl=False>>).
+ERROR pika.adapters.utils.io_services_utils Socket EOF; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45818)>
+ERROR pika.adapters.base_connection Transport indicated EOF.
+INFO pika.adapters.utils.io_services_utils protocol.eof_received() elected to close: <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45818)>
+INFO pika.adapters.utils.io_services_utils _AsyncTransportBase._initate_abort(): Initiating abrupt asynchronous transport shutdown: state=1; error=None; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45818)>
+INFO pika.adapters.utils.io_services_utils Deactivating transport: state=1; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45818)>
+ERROR pika.adapters.base_connection connection_lost: StreamLostError: ('Transport indicated EOF',)
+INFO pika.connection AMQP stack terminated, failed to connect, or aborted: opened=False, error-arg=StreamLostError: ('Transport indicated EOF',); pending-error=None
+ERROR pika.connection Probably incompatible Protocol Versions
+INFO pika.connection Connection setup terminated due to IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",)
+ERROR pika.adapters.utils.connection_workflow AMQPConnector - reporting failure: AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",)
+ERROR pika.adapters.utils.connection_workflow AMQP connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None.
+ERROR pika.adapters.utils.connection_workflow AMQPConnectionWorkflow - reporting failure: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None
+INFO pika.adapters.utils.io_services_utils Closing transport socket and unlinking: state=3; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45818)>
+ERROR pika.adapters.blocking_connection Connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None
+ERROR pika.adapters.blocking_connection Error in _create_connection().
+Traceback (most recent call last):
+  File "/home/enigma/MyProjects/job_search/тестовые/payment-processing/.venv/lib/python3.12/site-packages/pika/adapters/blocking_connection.py", line 478, in _create_connection
+    raise self._reap_last_connection_workflow_error(error)
+pika.exceptions.IncompatibleProtocolError: StreamLostError: ('Transport indicated EOF',)
+INFO pika.adapters.utils.connection_workflow Pika version 1.4.4 connecting to ('127.0.0.1', 32780)
+INFO pika.adapters.utils.io_services_utils Socket connected: <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45830), raddr=('127.0.0.1', 32780)>
+INFO pika.adapters.utils.connection_workflow Streaming transport linked up: (<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f8e9164ef00>, _StreamingProtocolShim: <SelectConnection PROTOCOL transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f8e9164ef00> params=<ConnectionParameters host=localhost port=32780 virtual_host=/ ssl=False>>).
+ERROR pika.adapters.utils.io_services_utils Socket EOF; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45830)>
+ERROR pika.adapters.base_connection Transport indicated EOF.
+INFO pika.adapters.utils.io_services_utils protocol.eof_received() elected to close: <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45830)>
+INFO pika.adapters.utils.io_services_utils _AsyncTransportBase._initate_abort(): Initiating abrupt asynchronous transport shutdown: state=1; error=None; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45830)>
+INFO pika.adapters.utils.io_services_utils Deactivating transport: state=1; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45830)>
+ERROR pika.adapters.base_connection connection_lost: StreamLostError: ('Transport indicated EOF',)
+INFO pika.connection AMQP stack terminated, failed to connect, or aborted: opened=False, error-arg=StreamLostError: ('Transport indicated EOF',); pending-error=None
+ERROR pika.connection Probably incompatible Protocol Versions
+INFO pika.connection Connection setup terminated due to IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",)
+ERROR pika.adapters.utils.connection_workflow AMQPConnector - reporting failure: AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",)
+ERROR pika.adapters.utils.connection_workflow AMQP connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None.
+ERROR pika.adapters.utils.connection_workflow AMQPConnectionWorkflow - reporting failure: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None
+INFO pika.adapters.utils.io_services_utils Closing transport socket and unlinking: state=3; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45830)>
+ERROR pika.adapters.blocking_connection Connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None
+ERROR pika.adapters.blocking_connection Error in _create_connection().
+Traceback (most recent call last):
+  File "/home/enigma/MyProjects/job_search/тестовые/payment-processing/.venv/lib/python3.12/site-packages/pika/adapters/blocking_connection.py", line 478, in _create_connection
+    raise self._reap_last_connection_workflow_error(error)
+pika.exceptions.IncompatibleProtocolError: StreamLostError: ('Transport indicated EOF',)
+INFO pika.adapters.utils.connection_workflow Pika version 1.4.4 connecting to ('127.0.0.1', 32780)
+INFO pika.adapters.utils.io_services_utils Socket connected: <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45838), raddr=('127.0.0.1', 32780)>
+INFO pika.adapters.utils.connection_workflow Streaming transport linked up: (<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f8e9164fb30>, _StreamingProtocolShim: <SelectConnection PROTOCOL transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f8e9164fb30> params=<ConnectionParameters host=localhost port=32780 virtual_host=/ ssl=False>>).
+ERROR pika.adapters.utils.io_services_utils Socket EOF; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45838)>
+ERROR pika.adapters.base_connection Transport indicated EOF.
+INFO pika.adapters.utils.io_services_utils protocol.eof_received() elected to close: <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45838)>
+INFO pika.adapters.utils.io_services_utils _AsyncTransportBase._initate_abort(): Initiating abrupt asynchronous transport shutdown: state=1; error=None; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45838)>
+INFO pika.adapters.utils.io_services_utils Deactivating transport: state=1; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45838)>
+ERROR pika.adapters.base_connection connection_lost: StreamLostError: ('Transport indicated EOF',)
+INFO pika.connection AMQP stack terminated, failed to connect, or aborted: opened=False, error-arg=StreamLostError: ('Transport indicated EOF',); pending-error=None
+ERROR pika.connection Probably incompatible Protocol Versions
+INFO pika.connection Connection setup terminated due to IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",)
+ERROR pika.adapters.utils.connection_workflow AMQPConnector - reporting failure: AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",)
+ERROR pika.adapters.utils.connection_workflow AMQP connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None.
+ERROR pika.adapters.utils.connection_workflow AMQPConnectionWorkflow - reporting failure: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None
+INFO pika.adapters.utils.io_services_utils Closing transport socket and unlinking: state=3; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45838)>
+ERROR pika.adapters.blocking_connection Connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None
+ERROR pika.adapters.blocking_connection Error in _create_connection().
+Traceback (most recent call last):
+  File "/home/enigma/MyProjects/job_search/тестовые/payment-processing/.venv/lib/python3.12/site-packages/pika/adapters/blocking_connection.py", line 478, in _create_connection
+    raise self._reap_last_connection_workflow_error(error)
+pika.exceptions.IncompatibleProtocolError: StreamLostError: ('Transport indicated EOF',)
+INFO pika.adapters.utils.connection_workflow Pika version 1.4.4 connecting to ('127.0.0.1', 32780)
+INFO pika.adapters.utils.io_services_utils Socket connected: <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45846), raddr=('127.0.0.1', 32780)>
+INFO pika.adapters.utils.connection_workflow Streaming transport linked up: (<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f8e916b0830>, _StreamingProtocolShim: <SelectConnection PROTOCOL transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f8e916b0830> params=<ConnectionParameters host=localhost port=32780 virtual_host=/ ssl=False>>).
+ERROR pika.adapters.utils.io_services_utils Socket EOF; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45846)>
+ERROR pika.adapters.base_connection Transport indicated EOF.
+INFO pika.adapters.utils.io_services_utils protocol.eof_received() elected to close: <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45846)>
+INFO pika.adapters.utils.io_services_utils _AsyncTransportBase._initate_abort(): Initiating abrupt asynchronous transport shutdown: state=1; error=None; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45846)>
+INFO pika.adapters.utils.io_services_utils Deactivating transport: state=1; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45846)>
+ERROR pika.adapters.base_connection connection_lost: StreamLostError: ('Transport indicated EOF',)
+INFO pika.connection AMQP stack terminated, failed to connect, or aborted: opened=False, error-arg=StreamLostError: ('Transport indicated EOF',); pending-error=None
+ERROR pika.connection Probably incompatible Protocol Versions
+INFO pika.connection Connection setup terminated due to IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",)
+ERROR pika.adapters.utils.connection_workflow AMQPConnector - reporting failure: AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",)
+ERROR pika.adapters.utils.connection_workflow AMQP connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None.
+ERROR pika.adapters.utils.connection_workflow AMQPConnectionWorkflow - reporting failure: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None
+INFO pika.adapters.utils.io_services_utils Closing transport socket and unlinking: state=3; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45846)>
+ERROR pika.adapters.blocking_connection Connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None
+ERROR pika.adapters.blocking_connection Error in _create_connection().
+Traceback (most recent call last):
+  File "/home/enigma/MyProjects/job_search/тестовые/payment-processing/.venv/lib/python3.12/site-packages/pika/adapters/blocking_connection.py", line 478, in _create_connection
+    raise self._reap_last_connection_workflow_error(error)
+pika.exceptions.IncompatibleProtocolError: StreamLostError: ('Transport indicated EOF',)
+INFO pika.adapters.utils.connection_workflow Pika version 1.4.4 connecting to ('127.0.0.1', 32780)
+INFO pika.adapters.utils.io_services_utils Socket connected: <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 34348), raddr=('127.0.0.1', 32780)>
+INFO pika.adapters.utils.connection_workflow Streaming transport linked up: (<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f8e916b14c0>, _StreamingProtocolShim: <SelectConnection PROTOCOL transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f8e916b14c0> params=<ConnectionParameters host=localhost port=32780 virtual_host=/ ssl=False>>).
+ERROR pika.adapters.utils.io_services_utils Socket EOF; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 34348)>
+ERROR pika.adapters.base_connection Transport indicated EOF.
+INFO pika.adapters.utils.io_services_utils protocol.eof_received() elected to close: <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 34348)>
+INFO pika.adapters.utils.io_services_utils _AsyncTransportBase._initate_abort(): Initiating abrupt asynchronous transport shutdown: state=1; error=None; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 34348)>
+INFO pika.adapters.utils.io_services_utils Deactivating transport: state=1; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 34348)>
+ERROR pika.adapters.base_connection connection_lost: StreamLostError: ('Transport indicated EOF',)
+INFO pika.connection AMQP stack terminated, failed to connect, or aborted: opened=False, error-arg=StreamLostError: ('Transport indicated EOF',); pending-error=None
+ERROR pika.connection Probably incompatible Protocol Versions
+INFO pika.connection Connection setup terminated due to IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",)
+ERROR pika.adapters.utils.connection_workflow AMQPConnector - reporting failure: AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",)
+ERROR pika.adapters.utils.connection_workflow AMQP connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None.
+ERROR pika.adapters.utils.connection_workflow AMQPConnectionWorkflow - reporting failure: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None
+INFO pika.adapters.utils.io_services_utils Closing transport socket and unlinking: state=3; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 34348)>
+ERROR pika.adapters.blocking_connection Connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None
+ERROR pika.adapters.blocking_connection Error in _create_connection().
+Traceback (most recent call last):
+  File "/home/enigma/MyProjects/job_search/тестовые/payment-processing/.venv/lib/python3.12/site-packages/pika/adapters/blocking_connection.py", line 478, in _create_connection
+    raise self._reap_last_connection_workflow_error(error)
+pika.exceptions.IncompatibleProtocolError: StreamLostError: ('Transport indicated EOF',)
+INFO pika.adapters.utils.connection_workflow Pika version 1.4.4 connecting to ('127.0.0.1', 32780)
+INFO pika.adapters.utils.io_services_utils Socket connected: <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 34358), raddr=('127.0.0.1', 32780)>
+INFO pika.adapters.utils.connection_workflow Streaming transport linked up: (<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f8e916b2060>, _StreamingProtocolShim: <SelectConnection PROTOCOL transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f8e916b2060> params=<ConnectionParameters host=localhost port=32780 virtual_host=/ ssl=False>>).
+INFO pika.adapters.utils.connection_workflow AMQPConnector - reporting success: <SelectConnection OPEN transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f8e916b2060> params=<ConnectionParameters host=localhost port=32780 virtual_host=/ ssl=False>>
+INFO pika.adapters.utils.connection_workflow AMQPConnectionWorkflow - reporting success: <SelectConnection OPEN transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f8e916b2060> params=<ConnectionParameters host=localhost port=32780 virtual_host=/ ssl=False>>
+INFO pika.adapters.blocking_connection Connection workflow succeeded: <SelectConnection OPEN transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f8e916b2060> params=<ConnectionParameters host=localhost port=32780 virtual_host=/ ssl=False>>
+INFO pika.adapters.blocking_connection Closing connection (200): Normal shutdown
+INFO pika.connection Closing connection (200): 'Normal shutdown'
+INFO pika.adapters.utils.io_services_utils Aborting transport connection: state=1; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 34358), raddr=('127.0.0.1', 32780)>
+INFO pika.adapters.utils.io_services_utils _AsyncTransportBase._initate_abort(): Initiating abrupt asynchronous transport shutdown: state=1; error=None; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 34358), raddr=('127.0.0.1', 32780)>
+INFO pika.adapters.utils.io_services_utils Deactivating transport: state=1; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 34358), raddr=('127.0.0.1', 32780)>
+INFO pika.connection AMQP stack terminated, failed to connect, or aborted: opened=True, error-arg=None; pending-error=ConnectionClosedByClient: (200) 'Normal shutdown'
+INFO pika.connection Stack terminated due to ConnectionClosedByClient: (200) 'Normal shutdown'
+INFO pika.adapters.utils.io_services_utils Closing transport socket and unlinking: state=3; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 34358), raddr=('127.0.0.1', 32780)>
+INFO pika.adapters.blocking_connection User-initiated close: result=BlockingConnection__OnClosedArgs(connection=<SelectConnection CLOSED transport=None params=<ConnectionParameters host=localhost port=32780 virtual_host=/ ssl=False>>, error=ConnectionClosedByClient: (200) 'Normal shutdown')
+INFO testcontainers.core.container Pulling image postgres:16-alpine
+INFO testcontainers.core.container Container started: 4ac1e5ab7e38
+PASSED                                                                   [  1%]
+tests/integration/test_api.py::test_auth_validation_and_missing_payment PASSED [  2%]
+tests/integration/test_api.py::test_idempotency_on_postgres PASSED       [  3%]
+tests/integration/test_api.py::test_concurrent_create_with_one_key PASSED [  4%]
+tests/integration/test_dlq.py::test_retry_queue_returns_message_to_main PASSED [  5%]
+tests/integration/test_dlq.py::test_message_is_dead_lettered_after_three_attempts PASSED [  6%]
+tests/integration/test_flow.py::test_processor_decline_and_webhook_retry_over_http PASSED [  7%]
+tests/integration/test_flow.py::test_queue_consumer_marks_success_and_calls_webhook PASSED [  8%]
+tests/integration/test_migrations.py::test_migrations_create_payment_and_outbox_tables PASSED [  9%]
+tests/integration/test_migrations.py::test_downgrade_removes_tables PASSED [ 10%]
+tests/integration/test_relay.py::test_relay_publishes_payments_new_and_marks_outbox PASSED [ 12%]
+tests/integration/test_relay.py::test_create_leaves_outbox_pending_until_relay PASSED [ 13%]
+tests/integration/test_relay.py::test_second_relay_skips_row_locked_by_the_first PASSED [ 14%]
+tests/unit/test_compose.py::test_compose_declares_required_services PASSED [ 15%]
+tests/unit/test_compose.py::test_readme_has_run_and_examples PASSED      [ 16%]
+tests/unit/test_compose.py::test_api_entrypoint_runs_migrations PASSED   [ 17%]
+tests/unit/test_delivery.py::test_success_acks_without_republish PASSED  [ 18%]
+tests/unit/test_delivery.py::test_transient_error_schedules_retry PASSED [ 19%]
+tests/unit/test_delivery.py::test_permanent_error_goes_to_dlq PASSED     [ 20%]
+tests/unit/test_delivery.py::test_unreadable_message_goes_to_dlq PASSED  [ 21%]
+tests/unit/test_fingerprint.py::test_same_payload_has_stable_hash PASSED [ 23%]
+tests/unit/test_fingerprint.py::test_different_amount_changes_hash PASSED [ 24%]
+tests/unit/test_gateway.py::test_gateway_succeeds_below_success_rate PASSED [ 25%]
+tests/unit/test_gateway.py::test_gateway_fails_at_success_rate_boundary PASSED [ 26%]
+tests/unit/test_http.py::test_create_returns_accepted PASSED             [ 27%]
+tests/unit/test_http.py::test_get_returns_payment PASSED                 [ 28%]
+tests/unit/test_http.py::test_missing_and_wrong_api_key PASSED           [ 29%]
+tests/unit/test_http.py::test_invalid_body_and_missing_idempotency_key PASSED [ 30%]
+tests/unit/test_http.py::test_idempotent_replay_and_conflict PASSED      [ 31%]
+tests/unit/test_http.py::test_unknown_payment_returns_404 PASSED         [ 32%]
+tests/unit/test_http.py::test_accepts_each_currency[RUB] PASSED          [ 34%]
+tests/unit/test_http.py::test_accepts_each_currency[USD] PASSED          [ 35%]
+tests/unit/test_http.py::test_accepts_each_currency[EUR] PASSED          [ 36%]
+tests/unit/test_http.py::test_rejects_private_webhook_and_keeps_api_key_out_of_the_body PASSED [ 37%]
+tests/unit/test_http.py::test_get_hides_internal_columns PASSED          [ 38%]
+tests/unit/test_http.py::test_idempotency_key_is_stored_as_data PASSED   [ 39%]
+tests/unit/test_http.py::test_blank_idempotency_key_is_rejected PASSED   [ 40%]
+tests/unit/test_http.py::test_database_outage_hides_sql PASSED           [ 41%]
+tests/unit/test_http.py::test_create_persists_single_row PASSED          [ 42%]
+tests/unit/test_netpolicy.py::test_private_and_credential_urls_are_rejected[http://127.0.0.1/hook] PASSED [ 43%]
+tests/unit/test_netpolicy.py::test_private_and_credential_urls_are_rejected[http://10.1.2.3/hook] PASSED [ 45%]
+tests/unit/test_netpolicy.py::test_private_and_credential_urls_are_rejected[http://192.168.0.5/hook] PASSED [ 46%]
+tests/unit/test_netpolicy.py::test_private_and_credential_urls_are_rejected[http://169.254.169.254/latest/meta-data] PASSED [ 47%]
+tests/unit/test_netpolicy.py::test_private_and_credential_urls_are_rejected[http://[::1]/hook] PASSED [ 48%]
+tests/unit/test_netpolicy.py::test_private_and_credential_urls_are_rejected[http://localhost/hook] PASSED [ 49%]
+tests/unit/test_netpolicy.py::test_private_and_credential_urls_are_rejected[http://metadata.google.internal/computeMetadata/v1/] PASSED [ 50%]
+tests/unit/test_netpolicy.py::test_private_and_credential_urls_are_rejected[http://user:secret@example.com/hook] PASSED [ 51%]
+tests/unit/test_netpolicy.py::test_private_and_credential_urls_are_rejected[ftp://example.com/hook] PASSED [ 52%]
+tests/unit/test_netpolicy.py::test_public_url_is_allowed PASSED          [ 53%]
+tests/unit/test_netpolicy.py::test_private_url_is_allowed_when_flag_is_on PASSED [ 54%]
+tests/unit/test_outbox.py::test_publish_pending_marks_row_published PASSED [ 56%]
+tests/unit/test_outbox.py::test_publish_failure_leaves_row_pending PASSED [ 57%]
+tests/unit/test_outbox.py::test_published_row_stays_published_when_next_publish_fails PASSED [ 58%]
+tests/unit/test_payments.py::test_create_writes_payment_and_outbox PASSED [ 59%]
+tests/unit/test_payments.py::test_same_key_and_body_returns_existing_payment PASSED [ 60%]
+tests/unit/test_payments.py::test_same_key_and_different_body_conflicts PASSED [ 61%]
+tests/unit/test_payments.py::test_failed_commit_keeps_database_empty PASSED [ 62%]
+tests/unit/test_payments.py::test_get_missing_payment PASSED             [ 63%]
+tests/unit/test_pool.py::test_postgres_pool_is_bounded_and_checks_connections PASSED [ 64%]
+tests/unit/test_processing.py::test_success_updates_status_and_sends_webhook PASSED [ 65%]
+tests/unit/test_processing.py::test_decline_marks_payment_failed PASSED  [ 67%]
+tests/unit/test_processing.py::test_webhook_failure_does_not_repeat_gateway PASSED [ 68%]
+tests/unit/test_processing.py::test_second_worker_does_not_call_gateway_while_claim_is_held PASSED [ 69%]
+tests/unit/test_processing.py::test_missing_payment_is_permanent PASSED  [ 70%]
+tests/unit/test_publisher.py::test_outbox_publish_goes_to_payments_new PASSED [ 71%]
+tests/unit/test_publisher.py::test_retry_uses_exponential_queue_then_dlq PASSED [ 72%]
+tests/unit/test_retry.py::test_delay_doubles_each_attempt PASSED         [ 73%]
+tests/unit/test_retry.py::test_dead_letter_after_third_attempt PASSED    [ 74%]
+tests/unit/test_retry.py::test_retry_routing_key_matches_attempt PASSED  [ 75%]
+tests/unit/test_retry.py::test_read_attempt_defaults_to_zero PASSED      [ 76%]
+tests/unit/test_schemas.py::test_accepts_payment_body PASSED             [ 78%]
+tests/unit/test_schemas.py::test_accepts_supported_currencies[RUB] PASSED [ 79%]
+tests/unit/test_schemas.py::test_accepts_supported_currencies[USD] PASSED [ 80%]
+tests/unit/test_schemas.py::test_accepts_supported_currencies[EUR] PASSED [ 81%]
+tests/unit/test_schemas.py::test_rejects_oversized_metadata PASSED       [ 82%]
+tests/unit/test_schemas.py::test_rejects_long_description PASSED         [ 83%]
+tests/unit/test_schemas.py::test_amount_lower_bound_is_one_cent PASSED   [ 84%]
+tests/unit/test_schemas.py::test_rejects_invalid_payment_body[overrides0] PASSED [ 85%]
+tests/unit/test_schemas.py::test_rejects_invalid_payment_body[overrides1] PASSED [ 86%]
+tests/unit/test_schemas.py::test_rejects_invalid_payment_body[overrides2] PASSED [ 87%]
+tests/unit/test_schemas.py::test_rejects_invalid_payment_body[overrides3] PASSED [ 89%]
+tests/unit/test_schemas.py::test_rejects_invalid_payment_body[overrides4] PASSED [ 90%]
+tests/unit/test_schemas.py::test_rejects_invalid_payment_body[overrides5] PASSED [ 91%]
+tests/unit/test_schemas.py::test_rejects_invalid_payment_body[overrides6] PASSED [ 92%]
+tests/unit/test_schemas.py::test_details_serialize_amount_with_two_decimals PASSED [ 93%]
+tests/unit/test_topology.py::test_topology_has_main_queue_dlq_and_retry_queues PASSED [ 94%]
+tests/unit/test_topology.py::test_consumer_queue_uses_main_spec PASSED   [ 95%]
+tests/unit/test_webhook.py::test_webhook_returns_on_first_success PASSED [ 96%]
+tests/unit/test_webhook.py::test_webhook_retries_with_exponential_delay PASSED [ 97%]
+tests/unit/test_webhook.py::test_webhook_does_not_follow_redirects PASSED [ 98%]
+tests/unit/test_webhook.py::test_webhook_raises_after_exhausted_attempts PASSED [100%]
+
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/testcontainers/community/rabbitmq/__init__.py:58
+  /home/enigma/MyProjects/job_search/тестовые/payment-processing/.venv/lib/python3.12/site-packages/testcontainers/community/rabbitmq/__init__.py:58: DeprecationWarning: The @wait_container_is_ready decorator is deprecated and will be removed in a future version. Use structured wait strategies instead: container.waiting_for(HttpWaitStrategy(8080).for_status_code(200)) or container.waiting_for(LogMessageWaitStrategy('ready'))
+    @wait_container_is_ready(pika.exceptions.IncompatibleProtocolError, pika.exceptions.AMQPConnectionError)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+==================================== PASSES ====================================
+_________________________ test_create_and_get_payment __________________________
+---------------------------- Captured stderr setup -----------------------------
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 0001_initial
+INFO  [alembic.runtime.migration] Running upgrade 0001_initial -> 0002_gateway_claim
+------------------------------ Captured log setup ------------------------------
+INFO     testcontainers.core.container:container.py:248 Pulling image testcontainers/ryuk:0.8.1
+INFO     testcontainers.core.container:container.py:288 Container started: da472cf3e362
+INFO     testcontainers.core.container:container.py:248 Pulling image rabbitmq:3.13-management-alpine
+INFO     testcontainers.core.container:container.py:288 Container started: 04e25a9ec312
+INFO     pika.adapters.utils.connection_workflow:connection_workflow.py:202 Pika version 1.4.4 connecting to ('127.0.0.1', 32780)
+INFO     pika.adapters.utils.io_services_utils:io_services_utils.py:368 Socket connected: <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45804), raddr=('127.0.0.1', 32780)>
+INFO     pika.adapters.utils.connection_workflow:connection_workflow.py:457 Streaming transport linked up: (<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f8e9164c3b0>, _StreamingProtocolShim: <SelectConnection PROTOCOL transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f8e9164c3b0> params=<ConnectionParameters host=localhost port=32780 virtual_host=/ ssl=False>>).
+ERROR    pika.adapters.utils.io_services_utils:io_services_utils.py:851 Socket EOF; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45804)>
+ERROR    pika.adapters.base_connection:base_connection.py:481 Transport indicated EOF.
+INFO     pika.adapters.utils.io_services_utils:io_services_utils.py:1137 protocol.eof_received() elected to close: <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45804)>
+INFO     pika.adapters.utils.io_services_utils:io_services_utils.py:966 _AsyncTransportBase._initate_abort(): Initiating abrupt asynchronous transport shutdown: state=1; error=None; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45804)>
+INFO     pika.adapters.utils.io_services_utils:io_services_utils.py:925 Deactivating transport: state=1; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45804)>
+ERROR    pika.adapters.base_connection:base_connection.py:464 connection_lost: StreamLostError: ('Transport indicated EOF',)
+INFO     pika.connection:connection.py:2102 AMQP stack terminated, failed to connect, or aborted: opened=False, error-arg=StreamLostError: ('Transport indicated EOF',); pending-error=None
+ERROR    pika.connection:connection.py:2134 Probably incompatible Protocol Versions
+INFO     pika.connection:connection.py:2168 Connection setup terminated due to IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",)
+ERROR    pika.adapters.utils.connection_workflow:connection_workflow.py:317 AMQPConnector - reporting failure: AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",)
+ERROR    pika.adapters.utils.connection_workflow:connection_workflow.py:797 AMQP connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None.
+ERROR    pika.adapters.utils.connection_workflow:connection_workflow.py:774 AMQPConnectionWorkflow - reporting failure: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None
+INFO     pika.adapters.utils.io_services_utils:io_services_utils.py:942 Closing transport socket and unlinking: state=3; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45804)>
+ERROR    pika.adapters.blocking_connection:blocking_connection.py:477 Connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None
+ERROR    pika.adapters.blocking_connection:blocking_connection.py:484 Error in _create_connection().
+Traceback (most recent call last):
+  File "/home/enigma/MyProjects/job_search/тестовые/payment-processing/.venv/lib/python3.12/site-packages/pika/adapters/blocking_connection.py", line 478, in _create_connection
+    raise self._reap_last_connection_workflow_error(error)
+pika.exceptions.IncompatibleProtocolError: StreamLostError: ('Transport indicated EOF',)
+INFO     pika.adapters.utils.connection_workflow:connection_workflow.py:202 Pika version 1.4.4 connecting to ('127.0.0.1', 32780)
+INFO     pika.adapters.utils.io_services_utils:io_services_utils.py:368 Socket connected: <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45816), raddr=('127.0.0.1', 32780)>
+INFO     pika.adapters.utils.connection_workflow:connection_workflow.py:457 Streaming transport linked up: (<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f8e9164d6d0>, _StreamingProtocolShim: <SelectConnection PROTOCOL transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f8e9164d6d0> params=<ConnectionParameters host=localhost port=32780 virtual_host=/ ssl=False>>).
+ERROR    pika.adapters.utils.io_services_utils:io_services_utils.py:851 Socket EOF; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45816)>
+ERROR    pika.adapters.base_connection:base_connection.py:481 Transport indicated EOF.
+INFO     pika.adapters.utils.io_services_utils:io_services_utils.py:1137 protocol.eof_received() elected to close: <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45816)>
+INFO     pika.adapters.utils.io_services_utils:io_services_utils.py:966 _AsyncTransportBase._initate_abort(): Initiating abrupt asynchronous transport shutdown: state=1; error=None; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45816)>
+INFO     pika.adapters.utils.io_services_utils:io_services_utils.py:925 Deactivating transport: state=1; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45816)>
+ERROR    pika.adapters.base_connection:base_connection.py:464 connection_lost: StreamLostError: ('Transport indicated EOF',)
+INFO     pika.connection:connection.py:2102 AMQP stack terminated, failed to connect, or aborted: opened=False, error-arg=StreamLostError: ('Transport indicated EOF',); pending-error=None
+ERROR    pika.connection:connection.py:2134 Probably incompatible Protocol Versions
+INFO     pika.connection:connection.py:2168 Connection setup terminated due to IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",)
+ERROR    pika.adapters.utils.connection_workflow:connection_workflow.py:317 AMQPConnector - reporting failure: AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",)
+ERROR    pika.adapters.utils.connection_workflow:connection_workflow.py:797 AMQP connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None.
+ERROR    pika.adapters.utils.connection_workflow:connection_workflow.py:774 AMQPConnectionWorkflow - reporting failure: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None
+INFO     pika.adapters.utils.io_services_utils:io_services_utils.py:942 Closing transport socket and unlinking: state=3; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45816)>
+ERROR    pika.adapters.blocking_connection:blocking_connection.py:477 Connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None
+ERROR    pika.adapters.blocking_connection:blocking_connection.py:484 Error in _create_connection().
+Traceback (most recent call last):
+  File "/home/enigma/MyProjects/job_search/тестовые/payment-processing/.venv/lib/python3.12/site-packages/pika/adapters/blocking_connection.py", line 478, in _create_connection
+    raise self._reap_last_connection_workflow_error(error)
+pika.exceptions.IncompatibleProtocolError: StreamLostError: ('Transport indicated EOF',)
+INFO     pika.adapters.utils.connection_workflow:connection_workflow.py:202 Pika version 1.4.4 connecting to ('127.0.0.1', 32780)
+INFO     pika.adapters.utils.io_services_utils:io_services_utils.py:368 Socket connected: <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45818), raddr=('127.0.0.1', 32780)>
+INFO     pika.adapters.utils.connection_workflow:connection_workflow.py:457 Streaming transport linked up: (<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f8e9164e2d0>, _StreamingProtocolShim: <SelectConnection PROTOCOL transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f8e9164e2d0> params=<ConnectionParameters host=localhost port=32780 virtual_host=/ ssl=False>>).
+ERROR    pika.adapters.utils.io_services_utils:io_services_utils.py:851 Socket EOF; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45818)>
+ERROR    pika.adapters.base_connection:base_connection.py:481 Transport indicated EOF.
+INFO     pika.adapters.utils.io_services_utils:io_services_utils.py:1137 protocol.eof_received() elected to close: <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45818)>
+INFO     pika.adapters.utils.io_services_utils:io_services_utils.py:966 _AsyncTransportBase._initate_abort(): Initiating abrupt asynchronous transport shutdown: state=1; error=None; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45818)>
+INFO     pika.adapters.utils.io_services_utils:io_services_utils.py:925 Deactivating transport: state=1; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45818)>
+ERROR    pika.adapters.base_connection:base_connection.py:464 connection_lost: StreamLostError: ('Transport indicated EOF',)
+INFO     pika.connection:connection.py:2102 AMQP stack terminated, failed to connect, or aborted: opened=False, error-arg=StreamLostError: ('Transport indicated EOF',); pending-error=None
+ERROR    pika.connection:connection.py:2134 Probably incompatible Protocol Versions
+INFO     pika.connection:connection.py:2168 Connection setup terminated due to IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",)
+ERROR    pika.adapters.utils.connection_workflow:connection_workflow.py:317 AMQPConnector - reporting failure: AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",)
+ERROR    pika.adapters.utils.connection_workflow:connection_workflow.py:797 AMQP connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None.
+ERROR    pika.adapters.utils.connection_workflow:connection_workflow.py:774 AMQPConnectionWorkflow - reporting failure: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None
+INFO     pika.adapters.utils.io_services_utils:io_services_utils.py:942 Closing transport socket and unlinking: state=3; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45818)>
+ERROR    pika.adapters.blocking_connection:blocking_connection.py:477 Connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None
+ERROR    pika.adapters.blocking_connection:blocking_connection.py:484 Error in _create_connection().
+Traceback (most recent call last):
+  File "/home/enigma/MyProjects/job_search/тестовые/payment-processing/.venv/lib/python3.12/site-packages/pika/adapters/blocking_connection.py", line 478, in _create_connection
+    raise self._reap_last_connection_workflow_error(error)
+pika.exceptions.IncompatibleProtocolError: StreamLostError: ('Transport indicated EOF',)
+INFO     pika.adapters.utils.connection_workflow:connection_workflow.py:202 Pika version 1.4.4 connecting to ('127.0.0.1', 32780)
+INFO     pika.adapters.utils.io_services_utils:io_services_utils.py:368 Socket connected: <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45830), raddr=('127.0.0.1', 32780)>
+INFO     pika.adapters.utils.connection_workflow:connection_workflow.py:457 Streaming transport linked up: (<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f8e9164ef00>, _StreamingProtocolShim: <SelectConnection PROTOCOL transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f8e9164ef00> params=<ConnectionParameters host=localhost port=32780 virtual_host=/ ssl=False>>).
+ERROR    pika.adapters.utils.io_services_utils:io_services_utils.py:851 Socket EOF; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45830)>
+ERROR    pika.adapters.base_connection:base_connection.py:481 Transport indicated EOF.
+INFO     pika.adapters.utils.io_services_utils:io_services_utils.py:1137 protocol.eof_received() elected to close: <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45830)>
+INFO     pika.adapters.utils.io_services_utils:io_services_utils.py:966 _AsyncTransportBase._initate_abort(): Initiating abrupt asynchronous transport shutdown: state=1; error=None; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45830)>
+INFO     pika.adapters.utils.io_services_utils:io_services_utils.py:925 Deactivating transport: state=1; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45830)>
+ERROR    pika.adapters.base_connection:base_connection.py:464 connection_lost: StreamLostError: ('Transport indicated EOF',)
+INFO     pika.connection:connection.py:2102 AMQP stack terminated, failed to connect, or aborted: opened=False, error-arg=StreamLostError: ('Transport indicated EOF',); pending-error=None
+ERROR    pika.connection:connection.py:2134 Probably incompatible Protocol Versions
+INFO     pika.connection:connection.py:2168 Connection setup terminated due to IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",)
+ERROR    pika.adapters.utils.connection_workflow:connection_workflow.py:317 AMQPConnector - reporting failure: AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",)
+ERROR    pika.adapters.utils.connection_workflow:connection_workflow.py:797 AMQP connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None.
+ERROR    pika.adapters.utils.connection_workflow:connection_workflow.py:774 AMQPConnectionWorkflow - reporting failure: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None
+INFO     pika.adapters.utils.io_services_utils:io_services_utils.py:942 Closing transport socket and unlinking: state=3; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45830)>
+ERROR    pika.adapters.blocking_connection:blocking_connection.py:477 Connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None
+ERROR    pika.adapters.blocking_connection:blocking_connection.py:484 Error in _create_connection().
+Traceback (most recent call last):
+  File "/home/enigma/MyProjects/job_search/тестовые/payment-processing/.venv/lib/python3.12/site-packages/pika/adapters/blocking_connection.py", line 478, in _create_connection
+    raise self._reap_last_connection_workflow_error(error)
+pika.exceptions.IncompatibleProtocolError: StreamLostError: ('Transport indicated EOF',)
+INFO     pika.adapters.utils.connection_workflow:connection_workflow.py:202 Pika version 1.4.4 connecting to ('127.0.0.1', 32780)
+INFO     pika.adapters.utils.io_services_utils:io_services_utils.py:368 Socket connected: <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45838), raddr=('127.0.0.1', 32780)>
+INFO     pika.adapters.utils.connection_workflow:connection_workflow.py:457 Streaming transport linked up: (<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f8e9164fb30>, _StreamingProtocolShim: <SelectConnection PROTOCOL transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f8e9164fb30> params=<ConnectionParameters host=localhost port=32780 virtual_host=/ ssl=False>>).
+ERROR    pika.adapters.utils.io_services_utils:io_services_utils.py:851 Socket EOF; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45838)>
+ERROR    pika.adapters.base_connection:base_connection.py:481 Transport indicated EOF.
+INFO     pika.adapters.utils.io_services_utils:io_services_utils.py:1137 protocol.eof_received() elected to close: <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45838)>
+INFO     pika.adapters.utils.io_services_utils:io_services_utils.py:966 _AsyncTransportBase._initate_abort(): Initiating abrupt asynchronous transport shutdown: state=1; error=None; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45838)>
+INFO     pika.adapters.utils.io_services_utils:io_services_utils.py:925 Deactivating transport: state=1; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45838)>
+ERROR    pika.adapters.base_connection:base_connection.py:464 connection_lost: StreamLostError: ('Transport indicated EOF',)
+INFO     pika.connection:connection.py:2102 AMQP stack terminated, failed to connect, or aborted: opened=False, error-arg=StreamLostError: ('Transport indicated EOF',); pending-error=None
+ERROR    pika.connection:connection.py:2134 Probably incompatible Protocol Versions
+INFO     pika.connection:connection.py:2168 Connection setup terminated due to IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",)
+ERROR    pika.adapters.utils.connection_workflow:connection_workflow.py:317 AMQPConnector - reporting failure: AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",)
+ERROR    pika.adapters.utils.connection_workflow:connection_workflow.py:797 AMQP connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None.
+ERROR    pika.adapters.utils.connection_workflow:connection_workflow.py:774 AMQPConnectionWorkflow - reporting failure: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None
+INFO     pika.adapters.utils.io_services_utils:io_services_utils.py:942 Closing transport socket and unlinking: state=3; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45838)>
+ERROR    pika.adapters.blocking_connection:blocking_connection.py:477 Connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None
+ERROR    pika.adapters.blocking_connection:blocking_connection.py:484 Error in _create_connection().
+Traceback (most recent call last):
+  File "/home/enigma/MyProjects/job_search/тестовые/payment-processing/.venv/lib/python3.12/site-packages/pika/adapters/blocking_connection.py", line 478, in _create_connection
+    raise self._reap_last_connection_workflow_error(error)
+pika.exceptions.IncompatibleProtocolError: StreamLostError: ('Transport indicated EOF',)
+INFO     pika.adapters.utils.connection_workflow:connection_workflow.py:202 Pika version 1.4.4 connecting to ('127.0.0.1', 32780)
+INFO     pika.adapters.utils.io_services_utils:io_services_utils.py:368 Socket connected: <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45846), raddr=('127.0.0.1', 32780)>
+INFO     pika.adapters.utils.connection_workflow:connection_workflow.py:457 Streaming transport linked up: (<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f8e916b0830>, _StreamingProtocolShim: <SelectConnection PROTOCOL transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f8e916b0830> params=<ConnectionParameters host=localhost port=32780 virtual_host=/ ssl=False>>).
+ERROR    pika.adapters.utils.io_services_utils:io_services_utils.py:851 Socket EOF; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45846)>
+ERROR    pika.adapters.base_connection:base_connection.py:481 Transport indicated EOF.
+INFO     pika.adapters.utils.io_services_utils:io_services_utils.py:1137 protocol.eof_received() elected to close: <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45846)>
+INFO     pika.adapters.utils.io_services_utils:io_services_utils.py:966 _AsyncTransportBase._initate_abort(): Initiating abrupt asynchronous transport shutdown: state=1; error=None; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45846)>
+INFO     pika.adapters.utils.io_services_utils:io_services_utils.py:925 Deactivating transport: state=1; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45846)>
+ERROR    pika.adapters.base_connection:base_connection.py:464 connection_lost: StreamLostError: ('Transport indicated EOF',)
+INFO     pika.connection:connection.py:2102 AMQP stack terminated, failed to connect, or aborted: opened=False, error-arg=StreamLostError: ('Transport indicated EOF',); pending-error=None
+ERROR    pika.connection:connection.py:2134 Probably incompatible Protocol Versions
+INFO     pika.connection:connection.py:2168 Connection setup terminated due to IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",)
+ERROR    pika.adapters.utils.connection_workflow:connection_workflow.py:317 AMQPConnector - reporting failure: AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",)
+ERROR    pika.adapters.utils.connection_workflow:connection_workflow.py:797 AMQP connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None.
+ERROR    pika.adapters.utils.connection_workflow:connection_workflow.py:774 AMQPConnectionWorkflow - reporting failure: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None
+INFO     pika.adapters.utils.io_services_utils:io_services_utils.py:942 Closing transport socket and unlinking: state=3; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 45846)>
+ERROR    pika.adapters.blocking_connection:blocking_connection.py:477 Connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None
+ERROR    pika.adapters.blocking_connection:blocking_connection.py:484 Error in _create_connection().
+Traceback (most recent call last):
+  File "/home/enigma/MyProjects/job_search/тестовые/payment-processing/.venv/lib/python3.12/site-packages/pika/adapters/blocking_connection.py", line 478, in _create_connection
+    raise self._reap_last_connection_workflow_error(error)
+pika.exceptions.IncompatibleProtocolError: StreamLostError: ('Transport indicated EOF',)
+INFO     pika.adapters.utils.connection_workflow:connection_workflow.py:202 Pika version 1.4.4 connecting to ('127.0.0.1', 32780)
+INFO     pika.adapters.utils.io_services_utils:io_services_utils.py:368 Socket connected: <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 34348), raddr=('127.0.0.1', 32780)>
+INFO     pika.adapters.utils.connection_workflow:connection_workflow.py:457 Streaming transport linked up: (<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f8e916b14c0>, _StreamingProtocolShim: <SelectConnection PROTOCOL transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f8e916b14c0> params=<ConnectionParameters host=localhost port=32780 virtual_host=/ ssl=False>>).
+ERROR    pika.adapters.utils.io_services_utils:io_services_utils.py:851 Socket EOF; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 34348)>
+ERROR    pika.adapters.base_connection:base_connection.py:481 Transport indicated EOF.
+INFO     pika.adapters.utils.io_services_utils:io_services_utils.py:1137 protocol.eof_received() elected to close: <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 34348)>
+INFO     pika.adapters.utils.io_services_utils:io_services_utils.py:966 _AsyncTransportBase._initate_abort(): Initiating abrupt asynchronous transport shutdown: state=1; error=None; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 34348)>
+INFO     pika.adapters.utils.io_services_utils:io_services_utils.py:925 Deactivating transport: state=1; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 34348)>
+ERROR    pika.adapters.base_connection:base_connection.py:464 connection_lost: StreamLostError: ('Transport indicated EOF',)
+INFO     pika.connection:connection.py:2102 AMQP stack terminated, failed to connect, or aborted: opened=False, error-arg=StreamLostError: ('Transport indicated EOF',); pending-error=None
+ERROR    pika.connection:connection.py:2134 Probably incompatible Protocol Versions
+INFO     pika.connection:connection.py:2168 Connection setup terminated due to IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",)
+ERROR    pika.adapters.utils.connection_workflow:connection_workflow.py:317 AMQPConnector - reporting failure: AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",)
+ERROR    pika.adapters.utils.connection_workflow:connection_workflow.py:797 AMQP connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None.
+ERROR    pika.adapters.utils.connection_workflow:connection_workflow.py:774 AMQPConnectionWorkflow - reporting failure: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None
+INFO     pika.adapters.utils.io_services_utils:io_services_utils.py:942 Closing transport socket and unlinking: state=3; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 34348)>
+ERROR    pika.adapters.blocking_connection:blocking_connection.py:477 Connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: IncompatibleProtocolError: The protocol returned by the server is not supported: ("StreamLostError: ('Transport indicated EOF',)",); first exception - None
+ERROR    pika.adapters.blocking_connection:blocking_connection.py:484 Error in _create_connection().
+Traceback (most recent call last):
+  File "/home/enigma/MyProjects/job_search/тестовые/payment-processing/.venv/lib/python3.12/site-packages/pika/adapters/blocking_connection.py", line 478, in _create_connection
+    raise self._reap_last_connection_workflow_error(error)
+pika.exceptions.IncompatibleProtocolError: StreamLostError: ('Transport indicated EOF',)
+INFO     pika.adapters.utils.connection_workflow:connection_workflow.py:202 Pika version 1.4.4 connecting to ('127.0.0.1', 32780)
+INFO     pika.adapters.utils.io_services_utils:io_services_utils.py:368 Socket connected: <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 34358), raddr=('127.0.0.1', 32780)>
+INFO     pika.adapters.utils.connection_workflow:connection_workflow.py:457 Streaming transport linked up: (<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f8e916b2060>, _StreamingProtocolShim: <SelectConnection PROTOCOL transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f8e916b2060> params=<ConnectionParameters host=localhost port=32780 virtual_host=/ ssl=False>>).
+INFO     pika.adapters.utils.connection_workflow:connection_workflow.py:319 AMQPConnector - reporting success: <SelectConnection OPEN transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f8e916b2060> params=<ConnectionParameters host=localhost port=32780 virtual_host=/ ssl=False>>
+INFO     pika.adapters.utils.connection_workflow:connection_workflow.py:776 AMQPConnectionWorkflow - reporting success: <SelectConnection OPEN transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f8e916b2060> params=<ConnectionParameters host=localhost port=32780 virtual_host=/ ssl=False>>
+INFO     pika.adapters.blocking_connection:blocking_connection.py:480 Connection workflow succeeded: <SelectConnection OPEN transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f8e916b2060> params=<ConnectionParameters host=localhost port=32780 virtual_host=/ ssl=False>>
+INFO     pika.adapters.blocking_connection:blocking_connection.py:855 Closing connection (200): Normal shutdown
+INFO     pika.connection:connection.py:1375 Closing connection (200): 'Normal shutdown'
+INFO     pika.adapters.utils.io_services_utils:io_services_utils.py:786 Aborting transport connection: state=1; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 34358), raddr=('127.0.0.1', 32780)>
+INFO     pika.adapters.utils.io_services_utils:io_services_utils.py:966 _AsyncTransportBase._initate_abort(): Initiating abrupt asynchronous transport shutdown: state=1; error=None; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 34358), raddr=('127.0.0.1', 32780)>
+INFO     pika.adapters.utils.io_services_utils:io_services_utils.py:925 Deactivating transport: state=1; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 34358), raddr=('127.0.0.1', 32780)>
+INFO     pika.connection:connection.py:2102 AMQP stack terminated, failed to connect, or aborted: opened=True, error-arg=None; pending-error=ConnectionClosedByClient: (200) 'Normal shutdown'
+INFO     pika.connection:connection.py:2172 Stack terminated due to ConnectionClosedByClient: (200) 'Normal shutdown'
+INFO     pika.adapters.utils.io_services_utils:io_services_utils.py:942 Closing transport socket and unlinking: state=3; <socket.socket fd=29, family=2, type=1, proto=6, laddr=('127.0.0.1', 34358), raddr=('127.0.0.1', 32780)>
+INFO     pika.adapters.blocking_connection:blocking_connection.py:553 User-initiated close: result=BlockingConnection__OnClosedArgs(connection=<SelectConnection CLOSED transport=None params=<ConnectionParameters host=localhost port=32780 virtual_host=/ ssl=False>>, error=ConnectionClosedByClient: (200) 'Normal shutdown')
+INFO     testcontainers.core.container:container.py:248 Pulling image postgres:16-alpine
+INFO     testcontainers.core.container:container.py:288 Container started: 4ac1e5ab7e38
+______________ test_message_is_dead_lettered_after_three_attempts ______________
+----------------------------- Captured stdout call -----------------------------
+2026-10-08 14:29:13,740 [32mINFO[0m     - payments | payments.new |            - `OnPaymentNew` waiting for messages
+------------------------------ Captured log call -------------------------------
+INFO     faststream.access.rabbit:logging.py:103 `OnPaymentNew` waiting for messages
+_____________ test_queue_consumer_marks_success_and_calls_webhook ______________
+----------------------------- Captured stdout call -----------------------------
+2026-10-08 14:29:14,740 [32mINFO[0m     - payments | payments.new |            - `OnPaymentNew` waiting for messages
+------------------------------ Captured log call -------------------------------
+INFO     faststream.access.rabbit:logging.py:103 `OnPaymentNew` waiting for messages
+________________________ test_downgrade_removes_tables _________________________
+----------------------------- Captured stderr call -----------------------------
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running downgrade 0002_gateway_claim -> 0001_initial
+INFO  [alembic.runtime.migration] Running downgrade 0001_initial -> 
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 0001_initial
+INFO  [alembic.runtime.migration] Running upgrade 0001_initial -> 0002_gateway_claim
+=========================== short test summary info ============================
+PASSED tests/integration/test_api.py::test_create_and_get_payment
+PASSED tests/integration/test_api.py::test_auth_validation_and_missing_payment
+PASSED tests/integration/test_api.py::test_idempotency_on_postgres
+PASSED tests/integration/test_api.py::test_concurrent_create_with_one_key
+PASSED tests/integration/test_dlq.py::test_retry_queue_returns_message_to_main
+PASSED tests/integration/test_dlq.py::test_message_is_dead_lettered_after_three_attempts
+PASSED tests/integration/test_flow.py::test_processor_decline_and_webhook_retry_over_http
+PASSED tests/integration/test_flow.py::test_queue_consumer_marks_success_and_calls_webhook
+PASSED tests/integration/test_migrations.py::test_migrations_create_payment_and_outbox_tables
+PASSED tests/integration/test_migrations.py::test_downgrade_removes_tables
+PASSED tests/integration/test_relay.py::test_relay_publishes_payments_new_and_marks_outbox
+PASSED tests/integration/test_relay.py::test_create_leaves_outbox_pending_until_relay
+PASSED tests/integration/test_relay.py::test_second_relay_skips_row_locked_by_the_first
+PASSED tests/unit/test_compose.py::test_compose_declares_required_services
+PASSED tests/unit/test_compose.py::test_readme_has_run_and_examples
+PASSED tests/unit/test_compose.py::test_api_entrypoint_runs_migrations
+PASSED tests/unit/test_delivery.py::test_success_acks_without_republish
+PASSED tests/unit/test_delivery.py::test_transient_error_schedules_retry
+PASSED tests/unit/test_delivery.py::test_permanent_error_goes_to_dlq
+PASSED tests/unit/test_delivery.py::test_unreadable_message_goes_to_dlq
+PASSED tests/unit/test_fingerprint.py::test_same_payload_has_stable_hash
+PASSED tests/unit/test_fingerprint.py::test_different_amount_changes_hash
+PASSED tests/unit/test_gateway.py::test_gateway_succeeds_below_success_rate
+PASSED tests/unit/test_gateway.py::test_gateway_fails_at_success_rate_boundary
+PASSED tests/unit/test_http.py::test_create_returns_accepted
+PASSED tests/unit/test_http.py::test_get_returns_payment
+PASSED tests/unit/test_http.py::test_missing_and_wrong_api_key
+PASSED tests/unit/test_http.py::test_invalid_body_and_missing_idempotency_key
+PASSED tests/unit/test_http.py::test_idempotent_replay_and_conflict
+PASSED tests/unit/test_http.py::test_unknown_payment_returns_404
+PASSED tests/unit/test_http.py::test_accepts_each_currency[RUB]
+PASSED tests/unit/test_http.py::test_accepts_each_currency[USD]
+PASSED tests/unit/test_http.py::test_accepts_each_currency[EUR]
+PASSED tests/unit/test_http.py::test_rejects_private_webhook_and_keeps_api_key_out_of_the_body
+PASSED tests/unit/test_http.py::test_get_hides_internal_columns
+PASSED tests/unit/test_http.py::test_idempotency_key_is_stored_as_data
+PASSED tests/unit/test_http.py::test_blank_idempotency_key_is_rejected
+PASSED tests/unit/test_http.py::test_database_outage_hides_sql
+PASSED tests/unit/test_http.py::test_create_persists_single_row
+PASSED tests/unit/test_netpolicy.py::test_private_and_credential_urls_are_rejected[http://127.0.0.1/hook]
+PASSED tests/unit/test_netpolicy.py::test_private_and_credential_urls_are_rejected[http://10.1.2.3/hook]
+PASSED tests/unit/test_netpolicy.py::test_private_and_credential_urls_are_rejected[http://192.168.0.5/hook]
+PASSED tests/unit/test_netpolicy.py::test_private_and_credential_urls_are_rejected[http://169.254.169.254/latest/meta-data]
+PASSED tests/unit/test_netpolicy.py::test_private_and_credential_urls_are_rejected[http://[::1]/hook]
+PASSED tests/unit/test_netpolicy.py::test_private_and_credential_urls_are_rejected[http://localhost/hook]
+PASSED tests/unit/test_netpolicy.py::test_private_and_credential_urls_are_rejected[http://metadata.google.internal/computeMetadata/v1/]
+PASSED tests/unit/test_netpolicy.py::test_private_and_credential_urls_are_rejected[http://user:secret@example.com/hook]
+PASSED tests/unit/test_netpolicy.py::test_private_and_credential_urls_are_rejected[ftp://example.com/hook]
+PASSED tests/unit/test_netpolicy.py::test_public_url_is_allowed
+PASSED tests/unit/test_netpolicy.py::test_private_url_is_allowed_when_flag_is_on
+PASSED tests/unit/test_outbox.py::test_publish_pending_marks_row_published
+PASSED tests/unit/test_outbox.py::test_publish_failure_leaves_row_pending
+PASSED tests/unit/test_outbox.py::test_published_row_stays_published_when_next_publish_fails
+PASSED tests/unit/test_payments.py::test_create_writes_payment_and_outbox
+PASSED tests/unit/test_payments.py::test_same_key_and_body_returns_existing_payment
+PASSED tests/unit/test_payments.py::test_same_key_and_different_body_conflicts
+PASSED tests/unit/test_payments.py::test_failed_commit_keeps_database_empty
+PASSED tests/unit/test_payments.py::test_get_missing_payment
+PASSED tests/unit/test_pool.py::test_postgres_pool_is_bounded_and_checks_connections
+PASSED tests/unit/test_processing.py::test_success_updates_status_and_sends_webhook
+PASSED tests/unit/test_processing.py::test_decline_marks_payment_failed
+PASSED tests/unit/test_processing.py::test_webhook_failure_does_not_repeat_gateway
+PASSED tests/unit/test_processing.py::test_second_worker_does_not_call_gateway_while_claim_is_held
+PASSED tests/unit/test_processing.py::test_missing_payment_is_permanent
+PASSED tests/unit/test_publisher.py::test_outbox_publish_goes_to_payments_new
+PASSED tests/unit/test_publisher.py::test_retry_uses_exponential_queue_then_dlq
+PASSED tests/unit/test_retry.py::test_delay_doubles_each_attempt
+PASSED tests/unit/test_retry.py::test_dead_letter_after_third_attempt
+PASSED tests/unit/test_retry.py::test_retry_routing_key_matches_attempt
+PASSED tests/unit/test_retry.py::test_read_attempt_defaults_to_zero
+PASSED tests/unit/test_schemas.py::test_accepts_payment_body
+PASSED tests/unit/test_schemas.py::test_accepts_supported_currencies[RUB]
+PASSED tests/unit/test_schemas.py::test_accepts_supported_currencies[USD]
+PASSED tests/unit/test_schemas.py::test_accepts_supported_currencies[EUR]
+PASSED tests/unit/test_schemas.py::test_rejects_oversized_metadata
+PASSED tests/unit/test_schemas.py::test_rejects_long_description
+PASSED tests/unit/test_schemas.py::test_amount_lower_bound_is_one_cent
+PASSED tests/unit/test_schemas.py::test_rejects_invalid_payment_body[overrides0]
+PASSED tests/unit/test_schemas.py::test_rejects_invalid_payment_body[overrides1]
+PASSED tests/unit/test_schemas.py::test_rejects_invalid_payment_body[overrides2]
+PASSED tests/unit/test_schemas.py::test_rejects_invalid_payment_body[overrides3]
+PASSED tests/unit/test_schemas.py::test_rejects_invalid_payment_body[overrides4]
+PASSED tests/unit/test_schemas.py::test_rejects_invalid_payment_body[overrides5]
+PASSED tests/unit/test_schemas.py::test_rejects_invalid_payment_body[overrides6]
+PASSED tests/unit/test_schemas.py::test_details_serialize_amount_with_two_decimals
+PASSED tests/unit/test_topology.py::test_topology_has_main_queue_dlq_and_retry_queues
+PASSED tests/unit/test_topology.py::test_consumer_queue_uses_main_spec
+PASSED tests/unit/test_webhook.py::test_webhook_returns_on_first_success
+PASSED tests/unit/test_webhook.py::test_webhook_retries_with_exponential_delay
+PASSED tests/unit/test_webhook.py::test_webhook_does_not_follow_redirects
+PASSED tests/unit/test_webhook.py::test_webhook_raises_after_exhausted_attempts
+======================== 91 passed, 1 warning in 14.86s ========================

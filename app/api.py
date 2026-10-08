@@ -5,8 +5,9 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, Header, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.errors import IdempotencyConflictError, PaymentNotFoundError
+from app.errors import IdempotencyConflictError, PaymentNotFoundError, WebhookURLRejected
 from app.models import Payment
+from app.netpolicy import assert_webhook_url
 from app.payments import create_payment, get_payment
 from app.schemas import PaymentAccepted, PaymentCreate, PaymentDetails
 
@@ -17,12 +18,20 @@ def build_router() -> APIRouter:
     @router.post("/payments", status_code=202, response_model=PaymentAccepted)
     async def create(
         body: PaymentCreate,
+        request: Request,
         session: Annotated[AsyncSession, Depends(get_session)],
         idempotency_key: Annotated[str, Header(alias="Idempotency-Key", min_length=1, max_length=255)],
     ) -> PaymentAccepted:
         key = idempotency_key.strip()
         if not key:
             raise HTTPException(status_code=400, detail="Idempotency-Key is empty")
+        try:
+            assert_webhook_url(
+                str(body.webhook_url),
+                allow_private_networks=request.app.state.settings.webhook_allow_private_networks,
+            )
+        except WebhookURLRejected:
+            raise HTTPException(status_code=422, detail="webhook_url is not allowed") from None
         try:
             payment = await create_payment(session, body, key)
         except IdempotencyConflictError:

@@ -1,8 +1,9 @@
+import asyncio
 from uuid import uuid4
 
 import pytest
 
-from app.errors import PaymentNotFoundError, WebhookDeliveryError
+from app.errors import PaymentInProgress, PaymentNotFoundError, WebhookDeliveryError
 from app.gateway import PaymentGateway
 from app.payments import create_payment, get_payment
 from app.processing import PaymentProcessor
@@ -84,6 +85,32 @@ async def test_webhook_failure_does_not_repeat_gateway(session_factory) -> None:
     assert stored.status == "succeeded"
     assert stored.webhook_sent_at is not None
     assert webhook.calls == 2
+
+
+async def test_second_worker_does_not_call_gateway_while_claim_is_held(session_factory) -> None:
+    async with session_factory() as session:
+        payment = await create_payment(session, PaymentCreate.model_validate(payment_body()), "key-1")
+    started = asyncio.Event()
+    release = asyncio.Event()
+    calls = {"gateway": 0}
+
+    class HoldingGateway:
+        async def process(self, payment_id) -> bool:
+            calls["gateway"] += 1
+            started.set()
+            await release.wait()
+            return True
+
+    processor = PaymentProcessor(session_factory, HoldingGateway(), ScriptedWebhook(), claim_lease_seconds=30)
+    first = asyncio.create_task(processor.process(payment.id))
+    await started.wait()
+    second = asyncio.create_task(processor.process(payment.id))
+    await asyncio.sleep(0.05)
+    release.set()
+    done, raced = await asyncio.gather(first, second, return_exceptions=True)
+    assert done is None
+    assert isinstance(raced, PaymentInProgress)
+    assert calls["gateway"] == 1
 
 
 async def test_missing_payment_is_permanent(session_factory) -> None:

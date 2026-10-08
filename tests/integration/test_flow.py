@@ -35,7 +35,12 @@ async def test_processor_decline_and_webhook_retry_over_http(engine) -> None:
             success_rate=0,
             sleep=_noop,
         )
-        webhook = WebhookClient(attempts=3, base_delay_seconds=0.01, timeout_seconds=2)
+        webhook = WebhookClient(
+            attempts=3,
+            base_delay_seconds=0.01,
+            timeout_seconds=2,
+            allow_private_networks=True,
+        )
         await PaymentProcessor(factory, gateway, webhook).process(payment.id)
         async with factory() as session:
             stored = await get_payment(session, payment.id)
@@ -64,7 +69,12 @@ async def test_queue_consumer_marks_success_and_calls_webhook(api, rabbitmq_url)
             success_rate=1,
             sleep=_noop,
         )
-        webhook = WebhookClient(attempts=3, base_delay_seconds=0.01, timeout_seconds=2)
+        webhook = WebhookClient(
+            attempts=3,
+            base_delay_seconds=0.01,
+            timeout_seconds=2,
+            allow_private_networks=True,
+        )
         register_consumer(broker, PaymentProcessor(factory, gateway, webhook), publisher)
         await broker.start()
         try:

@@ -64,6 +64,7 @@ def settings(database_url, rabbitmq_url):
         gateway_min_delay_seconds=0,
         gateway_max_delay_seconds=0,
         gateway_success_rate=1,
+        webhook_allow_private_networks=True,
     )
 
 

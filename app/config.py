@@ -1,5 +1,6 @@
 from functools import lru_cache
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -18,6 +19,20 @@ class Settings(BaseSettings):
     gateway_min_delay_seconds: float = 2.0
     gateway_max_delay_seconds: float = 5.0
     gateway_success_rate: float = 0.9
+    gateway_claim_lease_seconds: float = 30.0
+    webhook_allow_private_networks: bool = False
+    consumer_prefetch: int = 8
+    db_pool_size: int = 10
+    db_max_overflow: int = 20
+    db_pool_timeout_seconds: float = 30.0
+    db_pool_recycle_seconds: int = 1800
+
+    @field_validator("api_key")
+    @classmethod
+    def api_key_is_set(cls, value: str) -> str:
+        if not value.strip():
+            raise ValueError("api_key is empty")
+        return value
 
     model_config = SettingsConfigDict(
         env_file=".env",

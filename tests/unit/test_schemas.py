@@ -13,10 +13,34 @@ def test_accepts_payment_body() -> None:
     assert payment.amount == Decimal("12.30")
 
 
+@pytest.mark.parametrize("currency", ["RUB", "USD", "EUR"])
+def test_accepts_supported_currencies(currency: str) -> None:
+    payment = PaymentCreate.model_validate(payment_body(currency=currency))
+    assert payment.currency == currency
+
+
+def test_rejects_oversized_metadata() -> None:
+    with pytest.raises(ValidationError):
+        PaymentCreate.model_validate(payment_body(metadata={"blob": "x" * 9000}))
+
+
+def test_rejects_long_description() -> None:
+    with pytest.raises(ValidationError):
+        PaymentCreate.model_validate(payment_body(description="x" * 2001))
+
+
+def test_amount_lower_bound_is_one_cent() -> None:
+    from decimal import Decimal
+
+    payment = PaymentCreate.model_validate(payment_body(amount="0.01"))
+    assert payment.amount == Decimal("0.01")
+
+
 @pytest.mark.parametrize(
     "overrides",
     [
         {"currency": "GBP"},
+        {"currency": "rub"},
         {"amount": "0"},
         {"amount": "-1"},
         {"amount": "1.234"},

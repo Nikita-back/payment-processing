@@ -1,109 +1,143 @@
 # Соответствие заданию
 
-Ниже каждый пункт ТЗ: что сделано и какой тест это подтверждает. Юнит-тесты работают на sqlite и подменах зависимостей. Интеграционные поднимают PostgreSQL 16 и RabbitMQ и, где нужен внешний вызов, ходят по настоящему HTTP.
+Источник задания: `docs/task.pdf`. Разбор ниже опирается на прогон `docs/test-run.log`.
 
-## Сущность Payment
+## Разбор лога
 
-Поля: id, сумма, валюта (`RUB`, `USD`, `EUR`), описание, metadata, статус (`pending`, `succeeded`, `failed`), idempotency key, webhook URL, даты создания и обработки.
+Команда: `pytest -vv --tb=short -rA --log-cli-level=INFO`.
 
-Реализация: `app/models.py` (`Payment`), миграция `alembic/versions/0001_initial.py`. Сумма — `Numeric(18, 2)`. Валюта и статус ограничены check-constraint. `request_hash` и `webhook_sent_at` в ответ API не входят: первое нужно, чтобы отличить повтор того же запроса от другого тела с тем же ключом, второе — чтобы не проводить платёж повторно, если webhook не доставился с первого раза.
+Итог в конце лога: `91 passed, 1 warning in 14.86s`. Строк `FAILED` нет. Секция `PASSES` перечисляет все 91 теста по одному.
 
-- Юнит: `tests/unit/test_payments.py::test_create_writes_payment_and_outbox` — после создания в строке лежат сумма, валюта, metadata и статус `pending`.
-- Юнит: `tests/unit/test_schemas.py` — валюта вне списка, нулевая и отрицательная сумма, больше двух знаков и лишнее поле отвергаются.
-- Интеграция: `tests/integration/test_migrations.py::test_migrations_create_payment_and_outbox_tables` — после `alembic upgrade` в PostgreSQL есть обе таблицы и перечисленные колонки, включая `metadata`, `idempotency_key`, `webhook_url`, `created_at`, `processed_at`.
-- Интеграция: `tests/integration/test_api.py::test_create_and_get_payment` — `GET` возвращает эти поля живого платежа.
+Единственное предупреждение — `DeprecationWarning` декоратора `@wait_container_is_ready` внутри пакета `testcontainers`, файл `.venv/.../testcontainers/community/rabbitmq/__init__.py:58`. На поведение сервиса не влияет: контейнер RabbitMQ после этого поднялся, и тесты публикации, consumer и DLQ прошли.
 
-## Таблица outbox
+В начале лога много строк `ERROR pika... IncompatibleProtocolError` / `StreamLostError` на `127.0.0.1:32780`. Это зонд готовности контейнера: порт уже открыт, а AMQP-рукопожатие ещё не готово. Зонд повторяет попытку, пока брокер не ответит. После этих строк интеграционные тесты `test_relay_*`, `test_dlq_*` и `test_queue_consumer_marks_success_and_calls_webhook` завершились `PASSED`, то есть брокер к моменту проверок был жив.
 
-Реализация: модель `Outbox`, та же миграция. Строка хранит `aggregate_id`, тип `payments.new`, JSON payload, статус `pending` / `published` и `published_at`.
+В логе нет тел запросов с ключом API и нет текста SQL из обработчика `503`.
 
-- Юнит: `tests/unit/test_payments.py::test_create_writes_payment_and_outbox` — payload содержит `payment_id` только что созданного платежа, статус `pending`.
-- Юнит: `tests/unit/test_payments.py::test_failed_commit_keeps_database_empty` — если фиксация транзакции падает, не остаётся ни платежа, ни события.
-- Интеграция: `tests/integration/test_migrations.py::test_downgrade_removes_tables` — `downgrade` убирает обе таблицы, повторный `upgrade` их возвращает (вызов в `finally`, чтобы следующие тесты видели схему).
-- Интеграция: `tests/integration/test_api.py::test_idempotency_on_postgres` — на один платёж ровно одна строка outbox.
+## Поля платежа
 
-## POST /api/v1/payments
+| Требование | Где | Доказательство |
+|---|---|---|
+| Уникальный `payment_id` (UUID) | `app/payments.py`, `app/models.py` | `test_create_returns_accepted` проверяет UUID. `test_create_writes_payment_and_outbox` видит строку в БД. `test_create_and_get_payment` читает тот же id из PostgreSQL. `test_create_persists_single_row` — ровно одна строка на создание. |
+| Сумма — десятичная, больше нуля, 2 знака | `Numeric(18, 2)`, `PaymentCreate.amount` | `test_amount_lower_bound_is_one_cent` принимает `0.01`. `test_rejects_invalid_payment_body[overrides2]` — `0`, `[overrides3]` — отрицательная, `[overrides4]` — три знака. `test_details_serialize_amount_with_two_decimals` отдаёт строку с двумя знаками. Check `amount > 0` в миграции `0001`. |
+| Валюта только `RUB` / `USD` / `EUR` | `Literal` в схеме, check в миграции | `test_accepts_supported_currencies` и `test_accepts_each_currency` по каждой валюте. `overrides0` — `GBP`, `overrides1` — `rub` в нижнем регистре. |
+| Описание | строка до 2000 символов, по умолчанию пустая | `test_accepts_payment_body`. `test_rejects_long_description` — 2001 символ. |
+| `metadata` — JSON-объект | колонка `JSON`, лимит 8192 байта | `test_accepts_payment_body`. `test_rejects_oversized_metadata`. `test_create_and_get_payment` читает metadata обратно из PostgreSQL. |
+| Статусы `pending` / `succeeded` / `failed` | check в модели и миграции | Создание отдаёт `pending`: `test_create_returns_accepted`. Успех: `test_success_updates_status_and_sends_webhook`, `test_queue_consumer_marks_success_and_calls_webhook`. Отказ шлюза: `test_decline_marks_payment_failed`, `test_processor_decline_and_webhook_retry_over_http`. |
+| `idempotency_key` | уникальный индекс `ix_payments_idempotency_key` | `test_idempotent_replay_and_conflict`, `test_idempotency_on_postgres`, `test_concurrent_create_with_one_key`. Ключ со спецсимволами SQL хранится как данные: `test_idempotency_key_is_stored_as_data`. |
+| `webhook_url` | `AnyHttpUrl` плюс сетевой фильтр | Публичный URL: `test_public_url_is_allowed`. Не URL: `overrides5`. |
+| `created_at` в ответе создания | `PaymentAccepted` | `test_create_returns_accepted` — поле с таймзоной. |
+| `processed_at` после обработки | проставляется в `PaymentProcessor` | `test_success_updates_status_and_sends_webhook`, `test_queue_consumer_marks_success_and_calls_webhook`. |
 
-Заголовок `Idempotency-Key` обязателен. Тело: сумма, валюта, описание, metadata, `webhook_url`. Ответ `202 Accepted` с `payment_id`, статусом и `created_at`.
+Внутренние колонки `request_hash`, `webhook_sent_at`, `gateway_claimed_at` в ответ API не входят: `test_get_hides_internal_columns`.
 
-Реализация: `app/api.py`, схема `PaymentCreate` / `PaymentAccepted`.
+## `POST /api/v1/payments`
 
-- Юнит: `tests/unit/test_http.py::test_create_returns_accepted`.
-- Юнит: `tests/unit/test_http.py::test_invalid_body_and_missing_idempotency_key` — нет ключа и кривое тело дают `422`.
-- Интеграция: `tests/integration/test_api.py::test_create_and_get_payment`.
+Обязательный заголовок `Idempotency-Key`. Тело: `amount`, `currency`, `description`, `metadata`, `webhook_url`. Ответ `202`: `payment_id`, `status`, `created_at`.
 
-## GET /api/v1/payments/{payment_id}
+- Успех: `test_create_returns_accepted` (SQLite) и `test_create_and_get_payment` (PostgreSQL).
+- Нет заголовка и кривое тело: `test_invalid_body_and_missing_idempotency_key`. Лишнее поле: `overrides6`.
+- Пустой и пробельный ключ: `400`, `test_blank_idempotency_key_is_rejected`.
+- Тот же ключ и то же тело — тот же платёж, `202`, текущий статус, без второй строки: `test_same_key_and_body_returns_existing_payment`, `test_idempotent_replay_and_conflict`, `test_idempotency_on_postgres`. Отпечаток тела — SHA-256 канонического JSON: `test_same_payload_has_stable_hash`, другая сумма меняет отпечаток: `test_different_amount_changes_hash`.
+- Тот же ключ и другое тело — `409`: `test_same_key_and_different_body_conflicts`, `test_idempotency_on_postgres`.
+- Два параллельных запроса с одним ключом оставляют одну строку: `test_concurrent_create_with_one_key`.
+- Платёж и outbox пишутся одним commit. Сбой commit откатывает оба: `test_failed_commit_keeps_database_empty`.
 
-Реализация: `app/api.py` (`read`), сборка ответа в `_details`.
+## `GET /api/v1/payments/{payment_id}`
 
-- Юнит: `tests/unit/test_http.py::test_get_returns_payment` и `test_unknown_payment_returns_404`.
-- Интеграция: `tests/integration/test_api.py::test_create_and_get_payment` и `test_auth_validation_and_missing_payment` (`404`).
+Полная карточка платежа: `test_get_returns_payment`, `test_create_and_get_payment`. Неизвестный id — `404`: `test_unknown_payment_returns_404`, `test_get_missing_payment`, `test_auth_validation_and_missing_payment`.
 
-## Аутентификация X-API-Key
+## Статический `X-API-Key`
 
-Статический ключ из `API_KEY` на всех маршрутах `/api/v1`. Сравнение через `secrets.compare_digest`. Нет заголовка или чужой ключ — `401`.
+На обоих методах, сравнение через `secrets.compare_digest`. Нет ключа и неверный ключ — `401`, тело не повторяет присланный секрет: `test_missing_and_wrong_api_key`, `test_rejects_private_webhook_and_keeps_api_key_out_of_the_body`, `test_auth_validation_and_missing_payment`. Пустой `API_KEY` в настройках не принимается валидатором `Settings`.
 
-- Юнит: `tests/unit/test_http.py::test_missing_and_wrong_api_key`.
-- Интеграция: `tests/integration/test_api.py::test_auth_validation_and_missing_payment`.
+## Очередь `payments.new` и один consumer
 
-## Идемпотентность
+Создание кладёт событие `payments.new` в outbox, а не сразу в брокер. Relay публикует в exchange `payments` с routing key `payments.new`.
 
-Тот же ключ и то же тело (хэш канонического JSON, `app/fingerprint.py`) возвращают уже созданный платёж и не пишут вторую строку. Тот же ключ и другое тело — `409`. Гонка двух одинаковых запросов упирается в уникальный индекс `ix_payments_idempotency_key`: второй запрос подхватывает уже вставленную строку.
+- Строка outbox появляется вместе с платежом: `test_create_writes_payment_and_outbox`.
+- Пока relay не отработал, статус outbox `pending` и глубина `payments.new` равна 0: `test_create_leaves_outbox_pending_until_relay`.
+- После публикации строка `published`, в очереди одно сообщение: `test_publish_pending_marks_row_published`, `test_relay_publishes_payments_new_and_marks_outbox`, `test_outbox_publish_goes_to_payments_new`.
+- Сбой публикации оставляет строку `pending`: `test_publish_failure_leaves_row_pending`. Если в пачке вторая публикация упала, первая уже `published`: `test_published_row_stays_published_when_next_publish_fails`.
+- Второй relay не берёт строку, залоченную первым (`FOR UPDATE SKIP LOCKED`): `test_second_relay_skips_row_locked_by_the_first`.
+- Один consumer читает `payments.new`, вызывает шлюз, пишет статус, шлёт webhook: `test_queue_consumer_marks_success_and_calls_webhook`. Успешная доставка не публикуется повторно: `test_success_acks_without_republish`.
 
-- Юнит: `tests/unit/test_fingerprint.py` — порядок ключей metadata не меняет хэш, другая сумма меняет.
-- Юнит: `tests/unit/test_payments.py::test_same_key_and_body_returns_existing_payment`, `test_same_key_and_different_body_conflicts`.
-- Юнит: `tests/unit/test_http.py::test_idempotent_replay_and_conflict`.
-- Интеграция: `tests/integration/test_api.py::test_idempotency_on_postgres`, `test_concurrent_create_with_one_key` — два параллельных POST дают один `payment_id` и одну строку в каждой таблице.
+Шлюз: пауза из диапазона 2–5 с и порог 90%. Ниже порога — успех, на границе `0.9` — отказ: `test_gateway_succeeds_below_success_rate`, `test_gateway_fails_at_success_rate_boundary`. В тестах генератор и sleep подменяются, чтобы не зависеть от случайности.
 
-## Публикация payments.new и outbox
+Webhook после смены статуса. Отказ шлюза тоже уходит в webhook, статус остаётся `failed`: `test_decline_marks_payment_failed`, `test_processor_decline_and_webhook_retry_over_http`. Ошибки отправки повторяются с паузой `base * 2^n` (1 с, затем 2 с), всего 3 попытки: `test_webhook_retries_with_exponential_delay`, `test_webhook_raises_after_exhausted_attempts`. Повторная доставка сообщения не вызывает шлюз снова, если статус уже конечный: `test_webhook_failure_does_not_repeat_gateway`.
 
-Создание платежа только пишет outbox. Отдельный цикл `run_relay` (`app/outbox.py`) забирает `pending` (`FOR UPDATE SKIP LOCKED` на PostgreSQL), публикует в обменник `payments` с ключом `payments.new` и только потом ставит `published`. Ошибка публикации откатывает отметку, строка остаётся `pending`.
+## Outbox, ретраи, DLQ
 
-Топология очередей: `app/topology.py`. Consumer подписывается на ту же спецификацию основной очереди (`app/consumer.py`).
+Топология: durable direct exchange `payments`, DLX `payments.dlx`, очередь `payments.new`, retry-очереди `payments.new.retry.0` и `payments.new.retry.1` с TTL `base * 2^attempt` (по умолчанию 1000 мс и 2000 мс), DLQ `payments.new.dlq`. У всех очередей `x-queue-type=classic`, чтобы объявление из aio-pika и FastStream совпадало. Заголовок попытки `x-attempt`, по умолчанию 0.
 
-- Юнит: `tests/unit/test_outbox.py::test_publish_pending_marks_row_published` и `test_publish_failure_leaves_row_pending`.
-- Юнит: `tests/unit/test_publisher.py::test_outbox_publish_goes_to_payments_new` — ключ маршрутизации `payments.new`, сообщение persistent, заголовок `x-attempt = 0`.
-- Юнит: `tests/unit/test_topology.py` — в спецификации есть `payments.new`, DLQ и две retry-очереди; очередь consumer совпадает со спецификацией.
-- Интеграция: `tests/integration/test_relay.py::test_relay_publishes_payments_new_and_marks_outbox` — после публикации в живом RabbitMQ в `payments.new` лежит одно сообщение, строка outbox `published`.
+- Состав очередей: `test_topology_has_main_queue_dlq_and_retry_queues`, consumer подписан на основную: `test_consumer_queue_uses_main_spec`.
+- Формула задержки и момент ухода в DLQ: `test_delay_doubles_each_attempt`, `test_dead_letter_after_third_attempt`, `test_retry_routing_key_matches_attempt`, `test_read_attempt_defaults_to_zero`, `test_retry_uses_exponential_queue_then_dlq`.
+- Живой RabbitMQ: TTL retry-очереди возвращает сообщение в `payments.new`: `test_retry_queue_returns_message_to_main`. Три неудачи — сообщение в DLQ, обработчик вызван 3 раза: `test_message_is_dead_lettered_after_three_attempts`.
+- Временная ошибка обработки уходит в retry: `test_transient_error_schedules_retry`. Постоянная (нет платежа, битый payload) сразу в DLQ: `test_permanent_error_goes_to_dlq`, `test_unreadable_message_goes_to_dlq`, `test_missing_payment_is_permanent`.
+- Отказ шлюза (`failed`) не считается ошибкой сообщения, если webhook доставлен.
 
-## Consumer: шлюз, статус, webhook
+Публикация ждёт confirm брокера (`publisher_confirms`). Prefetch consumer по умолчанию 8.
 
-Один обработчик `on_payment_new`. Эмуляция шлюза (`app/gateway.py`): `uniform(2, 5)` секунд и `random() < 0.9`. Отказ шлюза — это статус `failed`, а не повтор сообщения. Webhook (`app/webhook.py`) уходит после фиксации статуса. Если отправка падает, `webhook_sent_at` пустой, и следующая доставка сообщения шлёт webhook ещё раз, не вызывая шлюз.
+## Миграции и Docker
 
-В тестах пауза и датчик успеха подменяются, поэтому проверка 90/10 не зависит от случайности прогона: граница `0.89` — успех, `0.9` — отказ, в sleeper уходит значение из диапазона 2–5.
+Alembic `0001` создаёт `payments` и `outbox`, `0002` добавляет `gateway_claimed_at`. `test_migrations_create_payment_and_outbox_tables` проверяет таблицы на PostgreSQL 16. `test_downgrade_removes_tables` откатывает до пустой схемы и поднимает head обратно.
 
-- Юнит: `tests/unit/test_gateway.py`.
-- Юнит: `tests/unit/test_processing.py::test_success_updates_status_and_sends_webhook`, `test_decline_marks_payment_failed`, `test_webhook_failure_does_not_repeat_gateway`.
-- Интеграция: `tests/integration/test_flow.py::test_processor_decline_and_webhook_retry_over_http` — PostgreSQL, шлюз с долей успеха 0, webhook на локальный HTTP-сервер, который дважды отвечает 500 и затем 200. Три реальных запроса, статус `failed`.
-- Интеграция: `tests/integration/test_flow.py::test_queue_consumer_marks_success_and_calls_webhook` — сообщение из outbox доходит через RabbitMQ до consumer, `GET` показывает `succeeded` и `processed_at`, тестовый сервер получил тело с `payment_id` и суммой.
+`docker-compose.yml`: `postgres:16-alpine`, `rabbitmq:3.13-management-alpine`, `api`, `consumer`. Старт API: `alembic upgrade head`, затем `uvicorn app.main:create_app --factory`. README содержит команду запуска и примеры с `X-API-Key` и `Idempotency-Key`: `test_compose_declares_required_services`, `test_api_entrypoint_runs_migrations`, `test_readme_has_run_and_examples`.
 
-## Retry webhook
+## Безопасность
 
-Три попытки, пауза `base * 2^n` между ними (по умолчанию 1с и 2с).
+Фильтр webhook (`app/netpolicy.py`) по умолчанию запрещает не-http(s), userinfo в URL, `localhost`, `*.local`, хосты метаданных облака и любой неглобальный IP (частные сети, loopback, link-local, включая `169.254.169.254` и `::1`). Если DNS не ответил, имя остаётся допустимым, чтобы не резать внешние хосты из-за временного сбоя резолва. Если резолв вернул неглобальный адрес — отказ.
 
-- Юнит: `tests/unit/test_webhook.py::test_webhook_retries_with_exponential_delay` фиксирует паузы `[1, 2]`; `test_webhook_raises_after_exhausted_attempts` — после трёх ответов 500 летит `WebhookDeliveryError`.
-- Интеграция: тот же сценарий поверх сокета в `test_processor_decline_and_webhook_retry_over_http` (`probe.calls == 3`).
+- Каждый запрещённый URL: параметризация `test_private_and_credential_urls_are_rejected` (9 случаев).
+- Публичный `https://example.com/...` проходит: `test_public_url_is_allowed`.
+- Флаг `webhook_allow_private_networks` нужен только тестам с локальным приёмником: `test_private_url_is_allowed_when_flag_is_on`. В проде флаг выключен.
+- API отвечает `422` и не пишет адрес в тело: `test_rejects_private_webhook_and_keeps_api_key_out_of_the_body`.
+- Клиент webhook не следует редиректам. Ответ `302` на `http://127.0.0.1/admin` не порождает второй запрос, повтор идёт на исходный URL: `test_webhook_does_not_follow_redirects`.
+- Ошибка доставки в журнале — общая строка `webhook delivery failed`, без URL и секретов.
 
-## Retry сообщения и DLQ
+Отказ PostgreSQL на создании платежа — `503` с текстом `Service temporarily unavailable`, без SQL и без имён колонок: `test_database_outage_hides_sql`. Необработанные исключения не превращаются в общий handler, чтобы не прятать `401` и `422`.
 
-Три попытки обработки. После первой и второй ошибки сообщение уходит в очередь с TTL `base * 2^attempt` (по умолчанию 1с и 2с) и возвращается в `payments.new` с увеличенным `x-attempt`. Третья ошибка публикуется в `payments.dlx` / `payments.new.dlq`. Нечитаемое тело и отсутствие платежа (`PaymentNotFoundError`) в DLQ сразу: повтор их не починит.
+## Отказоустойчивость под нагрузкой
 
-Постоянный отказ шлюза (статус `failed`) сюда не входит — обработка при этом завершена успешно, если webhook доставлен.
+- Приём платежа не зависит от RabbitMQ: outbox `pending` и пустая очередь до relay (`test_create_leaves_outbox_pending_until_relay`).
+- Два relay не публикуют одну строку: `SKIP LOCKED` (`test_second_relay_skips_row_locked_by_the_first`).
+- Падение на середине пачки не откатывает уже подтверждённые публикации (`test_published_row_stays_published_when_next_publish_fails`).
+- Повторная доставка не вызывает шлюз, пока жив захват `gateway_claimed_at` (аренда 30 с). Второй worker получает `PaymentInProgress`, шлюз вызван один раз: `test_second_worker_does_not_call_gateway_while_claim_is_held`. Исключение шлюза снимает захват, чтобы следующая попытка могла забрать платёж. Если процесс умер в середине вызова шлюза, захват держится до конца аренды: короткие retry (1 с и 2 с) могут увести сообщение в DLQ раньше, чем аренда истечёт. Статус при этом остаётся `pending`, повторная обработка возможна после снятия аренды.
+- Пул PostgreSQL: `pool_pre_ping`, размер 10, overflow 20, timeout 30 с, recycle 1800 с. `test_postgres_pool_is_bounded_and_checks_connections` проверяет размер пула без реального коннекта.
+- Очереди durable, сообщения persistent, prefetch ограничен.
 
-- Юнит: `tests/unit/test_retry.py` — порог DLQ на третьей попытке и задержки 1000 / 2000 / 4000 мс.
-- Юнит: `tests/unit/test_publisher.py::test_retry_uses_exponential_queue_then_dlq` — ключи `payments.new.retry.0`, `payments.new.retry.1`, затем DLQ.
-- Юнит: `tests/unit/test_delivery.py` — временная ошибка планирует retry, постоянная и битое тело идут в DLQ, успешная обработка ничего не переотправляет.
-- Юнит: `tests/unit/test_topology.py` — у retry-очередей TTL и dead-letter обратно в `payments.new`, у основной очереди dead-letter в DLX.
-- Интеграция: `tests/integration/test_dlq.py::test_retry_queue_returns_message_to_main` — сообщение, отправленное в retry-очередь живого брокера, после TTL появляется в `payments.new`.
-- Интеграция: `tests/integration/test_dlq.py::test_message_is_dead_lettered_after_three_attempts` — обработчик трижды бросает ошибку, счётчик вызовов равен 3, сообщение лежит в `payments.new.dlq`.
+## Полный список тестов из лога
 
-## Docker Compose
+Интеграционные (PostgreSQL 16 и RabbitMQ 3.13):
 
-Сервисы `postgres`, `rabbitmq`, `api`, `consumer`. API сначала выполняет `alembic upgrade head`.
+- `tests/integration/test_api.py::test_create_and_get_payment`
+- `tests/integration/test_api.py::test_auth_validation_and_missing_payment`
+- `tests/integration/test_api.py::test_idempotency_on_postgres`
+- `tests/integration/test_api.py::test_concurrent_create_with_one_key`
+- `tests/integration/test_dlq.py::test_retry_queue_returns_message_to_main`
+- `tests/integration/test_dlq.py::test_message_is_dead_lettered_after_three_attempts`
+- `tests/integration/test_flow.py::test_processor_decline_and_webhook_retry_over_http`
+- `tests/integration/test_flow.py::test_queue_consumer_marks_success_and_calls_webhook`
+- `tests/integration/test_migrations.py::test_migrations_create_payment_and_outbox_tables`
+- `tests/integration/test_migrations.py::test_downgrade_removes_tables`
+- `tests/integration/test_relay.py::test_relay_publishes_payments_new_and_marks_outbox`
+- `tests/integration/test_relay.py::test_create_leaves_outbox_pending_until_relay`
+- `tests/integration/test_relay.py::test_second_relay_skips_row_locked_by_the_first`
 
-- Юнит: `tests/unit/test_compose.py` проверяет имена сервисов, образы и команду старта API.
-- Интеграция использует те же образы PostgreSQL 16 и RabbitMQ 3.13, что и compose, и ту же миграцию, которой стартует контейнер `api`.
+Юнит (SQLite, без Docker), все со статусом `PASSED` в том же логе:
 
-## Статус failed и очередь DLQ
-
-Отказ эмуляции шлюза переводит платёж в `failed` и уведомляет webhook. В DLQ попадают сообщения, которые не удалось обработать: сбой записи, недоступный webhook после трёх попыток, битое тело, неизвестный платёж.
+- `test_compose`: сервисы compose, README, entrypoint с миграциями
+- `test_delivery`: ack, retry, DLQ для постоянной ошибки и битого сообщения
+- `test_fingerprint`: стабильный хеш и смена суммы
+- `test_gateway`: успех ниже 0.9 и отказ на границе
+- `test_http`: создание, чтение, 401, 400, 409, 404, три валюты, SSRF, скрытые колонки, ключ как данные, пробельный ключ, 503 без SQL, одна строка
+- `test_netpolicy`: 9 запрещённых URL, публичный URL, разрешение при флаге
+- `test_outbox`: публикация, сбой, частичная пачка
+- `test_payments`: запись, повтор, конфликт, откат commit, отсутствующий платёж
+- `test_pool`: размер пула 10
+- `test_processing`: успех, отказ шлюза, webhook без повторного шлюза, захват, отсутствующий платёж
+- `test_publisher`: `payments.new` и переход retry → DLQ
+- `test_retry`: удвоение паузы, DLQ на третьей попытке, ключ маршрута, `x-attempt` по умолчанию 0
+- `test_schemas`: тело, три валюты, metadata, описание, `0.01`, семь невалидных тел, два знака суммы
+- `test_topology`: очередь, DLQ, retry, подписка consumer
+- `test_webhook`: успех с первой попытки, экспоненциальная пауза, запрет редиректа, исчерпание попыток

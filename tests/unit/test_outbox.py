@@ -43,3 +43,29 @@ async def test_publish_failure_leaves_row_pending(session_factory) -> None:
         row = await session.scalar(select(Outbox).where(Outbox.aggregate_id == payment.id))
     assert row.status == "pending"
     assert row.published_at is None
+
+
+class SecondPublishFails:
+    def __init__(self) -> None:
+        self.calls = 0
+
+    async def publish_outbox(self, payload: dict) -> None:
+        self.calls += 1
+        if self.calls == 2:
+            raise ConnectionError("broker down")
+
+
+async def test_published_row_stays_published_when_next_publish_fails(session_factory) -> None:
+    async with session_factory() as session:
+        first = await create_payment(session, PaymentCreate.model_validate(payment_body()), "key-1")
+    async with session_factory() as session:
+        second = await create_payment(session, PaymentCreate.model_validate(payment_body(amount="3.00")), "key-2")
+    publisher = SecondPublishFails()
+    async with session_factory() as session:
+        with pytest.raises(ConnectionError):
+            await publish_pending(session, publisher, batch_size=10)
+    async with session_factory() as session:
+        first_row = await session.scalar(select(Outbox).where(Outbox.aggregate_id == first.id))
+        second_row = await session.scalar(select(Outbox).where(Outbox.aggregate_id == second.id))
+    assert first_row.status == "published"
+    assert second_row.status == "pending"
