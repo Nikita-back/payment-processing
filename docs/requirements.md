@@ -6,7 +6,7 @@
 
 Команда: `pytest -vv --tb=short -rA --log-cli-level=INFO`. В `pyproject.toml` включено `filterwarnings = ["error"]`: любое предупреждение Python роняет прогон.
 
-Итог в конце лога: `91 passed in 13.76s`. Секций `warnings summary` и строк `FAILED` нет. Секция `PASSES` перечисляет все 91 теста по одному.
+Итог в конце лога: `92 passed in 14.87s`. Секций `warnings summary` и строк `FAILED` нет. Секция `PASSES` перечисляет все 92 теста по одному.
 
 Готовность RabbitMQ ждёт строку `Server startup complete` в логе контейнера. Устаревший декоратор `@wait_container_is_ready` не импортируется, поэтому в логе нет `DeprecationWarning` и нет рукопожатий pika до старта брокера.
 
@@ -87,11 +87,11 @@ Alembic `0001` создаёт `payments` и `outbox`, `0002` добавляет 
 Фильтр webhook (`app/netpolicy.py`) по умолчанию запрещает не-http(s), userinfo в URL, `localhost`, `*.local`, хосты метаданных облака и любой неглобальный IP (частные сети, loopback, link-local, включая `169.254.169.254` и `::1`). Если DNS не ответил, имя остаётся допустимым, чтобы не резать внешние хосты из-за временного сбоя резолва. Если резолв вернул неглобальный адрес — отказ.
 
 - Каждый запрещённый URL: параметризация `test_private_and_credential_urls_are_rejected` (9 случаев).
-- Публичный `https://example.com/...` проходит: `test_public_url_is_allowed`.
+- Имя, которое резолвится в публичный адрес, проходит: `test_public_url_is_allowed` (резолв подменён на `93.184.216.34`). Имя, которое резолвится в частный адрес, отклоняется: `test_hostname_that_resolves_to_private_ip_is_rejected`.
 - Флаг `webhook_allow_private_networks` нужен только тестам с локальным приёмником: `test_private_url_is_allowed_when_flag_is_on`. В проде флаг выключен.
 - API отвечает `422` и не пишет адрес в тело: `test_rejects_private_webhook_and_keeps_api_key_out_of_the_body`.
 - Клиент webhook не следует редиректам. Ответ `302` на `http://127.0.0.1/admin` не порождает второй запрос, повтор идёт на исходный URL: `test_webhook_does_not_follow_redirects`.
-- Ошибка доставки в журнале — общая строка `webhook delivery failed`, без URL и секретов.
+- Ошибка доставки — строка `webhook delivery failed`. Цепочка исключения обрывается, поэтому адрес и ответ шлюза в текст ошибки не попадают: `test_webhook_raises_after_exhausted_attempts`. В предупреждение журнала пишется только хост.
 
 Отказ PostgreSQL на создании платежа — `503` с текстом `Service temporarily unavailable`, без SQL и без имён колонок: `test_database_outage_hides_sql`. Необработанные исключения не превращаются в общий handler, чтобы не прятать `401` и `422`.
 
@@ -101,7 +101,7 @@ Alembic `0001` создаёт `payments` и `outbox`, `0002` добавляет 
 - Два relay не публикуют одну строку: `SKIP LOCKED` (`test_second_relay_skips_row_locked_by_the_first`).
 - Падение на середине пачки не откатывает уже подтверждённые публикации (`test_published_row_stays_published_when_next_publish_fails`).
 - Повторная доставка не вызывает шлюз, пока жив захват `gateway_claimed_at` (аренда 30 с). Второй worker получает `PaymentInProgress`, шлюз вызван один раз: `test_second_worker_does_not_call_gateway_while_claim_is_held`. Исключение шлюза снимает захват, чтобы следующая попытка могла забрать платёж. Если процесс умер в середине вызова шлюза, захват держится до конца аренды: короткие retry (1 с и 2 с) могут увести сообщение в DLQ раньше, чем аренда истечёт. Статус при этом остаётся `pending`, повторная обработка возможна после снятия аренды.
-- Пул PostgreSQL: `pool_pre_ping`, размер 10, overflow 20, timeout 30 с, recycle 1800 с. `test_postgres_pool_is_bounded_and_checks_connections` проверяет размер пула без реального коннекта.
+- Пул PostgreSQL у API и consumer: `pool_pre_ping`, размер 10, overflow 20, timeout 30 с, recycle 1800 с. `test_postgres_pool_is_bounded_and_checks_connections` проверяет размер пула без реального коннекта.
 - Очереди durable, сообщения persistent, prefetch ограничен.
 
 ## Полный список тестов из лога
@@ -129,7 +129,7 @@ Alembic `0001` создаёт `payments` и `outbox`, `0002` добавляет 
 - `test_fingerprint`: стабильный хеш и смена суммы
 - `test_gateway`: успех ниже 0.9 и отказ на границе
 - `test_http`: создание, чтение, 401, 400, 409, 404, три валюты, SSRF, скрытые колонки, ключ как данные, пробельный ключ, 503 без SQL, одна строка
-- `test_netpolicy`: 9 запрещённых URL, публичный URL, разрешение при флаге
+- `test_netpolicy`: 9 запрещённых URL, публичный резолв, частный резолв, разрешение при флаге
 - `test_outbox`: публикация, сбой, частичная пачка
 - `test_payments`: запись, повтор, конфликт, откат commit, отсутствующий платёж
 - `test_pool`: размер пула 10

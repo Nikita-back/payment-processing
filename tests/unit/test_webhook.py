@@ -41,7 +41,11 @@ async def test_webhook_retries_with_exponential_delay() -> None:
     assert delays == [1, 2]
 
 
-async def test_webhook_does_not_follow_redirects() -> None:
+async def test_webhook_does_not_follow_redirects(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(
+        "app.netpolicy.socket.getaddrinfo",
+        lambda *args, **kwargs: [(2, 1, 6, "", ("93.184.216.34", 0))],
+    )
     seen: list[str] = []
 
     def handle(request: httpx.Request) -> httpx.Response:
@@ -74,6 +78,10 @@ async def test_webhook_raises_after_exhausted_attempts() -> None:
 
     async with httpx.AsyncClient(transport=transport) as http:
         client = WebhookClient(attempts=3, base_delay_seconds=0.5, timeout_seconds=1, sleep=sleep, client=http)
-        with pytest.raises(WebhookDeliveryError):
+        with pytest.raises(WebhookDeliveryError) as caught:
             await client.deliver("https://merchant.example/hook", {"status": "failed"})
+    assert str(caught.value) == "webhook delivery failed"
+    assert "merchant.example" not in str(caught.value)
+    assert caught.value.__cause__ is None
+    assert caught.value.__context__ is None
     assert delays == [0.5, 1.0]

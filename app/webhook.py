@@ -39,7 +39,6 @@ class WebhookClient:
             transport=self._transport,
         )
         owns_client = self._client is None
-        last_error: Exception | None = None
         host = urlparse(url).hostname
         try:
             for attempt in range(self._attempts):
@@ -47,12 +46,11 @@ class WebhookClient:
                     response = await client.post(url, json=payload)
                     response.raise_for_status()
                     return
-                except Exception as exc:
-                    last_error = exc
+                except Exception:
                     logger.warning("webhook host %s failed on try %s", host, attempt + 1)
                     if attempt + 1 < self._attempts:
                         await self._sleep(self._base_delay * (2**attempt))
         finally:
             if owns_client:
                 await client.aclose()
-        raise WebhookDeliveryError("webhook delivery failed") from last_error
+        raise WebhookDeliveryError("webhook delivery failed") from None

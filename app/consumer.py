@@ -48,7 +48,13 @@ def _payload(message: RabbitMessage) -> dict:
 async def serve() -> None:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
     settings = get_settings()
-    engine = make_engine(settings.database_url)
+    engine = make_engine(
+        settings.database_url,
+        pool_size=settings.db_pool_size,
+        max_overflow=settings.db_max_overflow,
+        pool_timeout=settings.db_pool_timeout_seconds,
+        pool_recycle=settings.db_pool_recycle_seconds,
+    )
     await wait_for_schema(engine)
     session_factory = make_session_factory(engine)
     await declare_topology(

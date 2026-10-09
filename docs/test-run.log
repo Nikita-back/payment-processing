@@ -15,16 +15,16 @@ INFO alembic.runtime.plugins setup plugin alembic.autogenerate.constraints
 INFO alembic.runtime.plugins setup plugin alembic.autogenerate.defaults
 INFO alembic.runtime.plugins setup plugin alembic.autogenerate.comments
 INFO alembic.runtime.plugins setup plugin alembic.ext.checkconstraint_byname
-collected 91 items
+collected 92 items
 
 tests/integration/test_api.py::test_create_and_get_payment 
 -------------------------------- live log setup --------------------------------
 INFO testcontainers.core.container Pulling image testcontainers/ryuk:0.8.1
-INFO testcontainers.core.container Container started: 7cce399fa32b
+INFO testcontainers.core.container Container started: 7c8a2088e013
 INFO testcontainers.core.container Pulling image rabbitmq:3.13-management-alpine
-INFO testcontainers.core.container Container started: 829a031b123b
+INFO testcontainers.core.container Container started: efdcf19a0160
 INFO testcontainers.core.container Pulling image postgres:16-alpine
-INFO testcontainers.core.container Container started: e3a1390570e7
+INFO testcontainers.core.container Container started: 7cbb795e60a4
 PASSED                                                                   [  1%]
 tests/integration/test_api.py::test_auth_validation_and_missing_payment PASSED [  2%]
 tests/integration/test_api.py::test_idempotency_on_postgres PASSED       [  3%]
@@ -35,7 +35,7 @@ tests/integration/test_flow.py::test_processor_decline_and_webhook_retry_over_ht
 tests/integration/test_flow.py::test_queue_consumer_marks_success_and_calls_webhook PASSED [  8%]
 tests/integration/test_migrations.py::test_migrations_create_payment_and_outbox_tables PASSED [  9%]
 tests/integration/test_migrations.py::test_downgrade_removes_tables PASSED [ 10%]
-tests/integration/test_relay.py::test_relay_publishes_payments_new_and_marks_outbox PASSED [ 12%]
+tests/integration/test_relay.py::test_relay_publishes_payments_new_and_marks_outbox PASSED [ 11%]
 tests/integration/test_relay.py::test_create_leaves_outbox_pending_until_relay PASSED [ 13%]
 tests/integration/test_relay.py::test_second_relay_skips_row_locked_by_the_first PASSED [ 14%]
 tests/unit/test_compose.py::test_compose_declares_required_services PASSED [ 15%]
@@ -45,8 +45,8 @@ tests/unit/test_delivery.py::test_success_acks_without_republish PASSED  [ 18%]
 tests/unit/test_delivery.py::test_transient_error_schedules_retry PASSED [ 19%]
 tests/unit/test_delivery.py::test_permanent_error_goes_to_dlq PASSED     [ 20%]
 tests/unit/test_delivery.py::test_unreadable_message_goes_to_dlq PASSED  [ 21%]
-tests/unit/test_fingerprint.py::test_same_payload_has_stable_hash PASSED [ 23%]
-tests/unit/test_fingerprint.py::test_different_amount_changes_hash PASSED [ 24%]
+tests/unit/test_fingerprint.py::test_same_payload_has_stable_hash PASSED [ 22%]
+tests/unit/test_fingerprint.py::test_different_amount_changes_hash PASSED [ 23%]
 tests/unit/test_gateway.py::test_gateway_succeeds_below_success_rate PASSED [ 25%]
 tests/unit/test_gateway.py::test_gateway_fails_at_success_rate_boundary PASSED [ 26%]
 tests/unit/test_http.py::test_create_returns_accepted PASSED             [ 27%]
@@ -55,36 +55,37 @@ tests/unit/test_http.py::test_missing_and_wrong_api_key PASSED           [ 29%]
 tests/unit/test_http.py::test_invalid_body_and_missing_idempotency_key PASSED [ 30%]
 tests/unit/test_http.py::test_idempotent_replay_and_conflict PASSED      [ 31%]
 tests/unit/test_http.py::test_unknown_payment_returns_404 PASSED         [ 32%]
-tests/unit/test_http.py::test_accepts_each_currency[RUB] PASSED          [ 34%]
-tests/unit/test_http.py::test_accepts_each_currency[USD] PASSED          [ 35%]
-tests/unit/test_http.py::test_accepts_each_currency[EUR] PASSED          [ 36%]
-tests/unit/test_http.py::test_rejects_private_webhook_and_keeps_api_key_out_of_the_body PASSED [ 37%]
+tests/unit/test_http.py::test_accepts_each_currency[RUB] PASSED          [ 33%]
+tests/unit/test_http.py::test_accepts_each_currency[USD] PASSED          [ 34%]
+tests/unit/test_http.py::test_accepts_each_currency[EUR] PASSED          [ 35%]
+tests/unit/test_http.py::test_rejects_private_webhook_and_keeps_api_key_out_of_the_body PASSED [ 36%]
 tests/unit/test_http.py::test_get_hides_internal_columns PASSED          [ 38%]
 tests/unit/test_http.py::test_idempotency_key_is_stored_as_data PASSED   [ 39%]
 tests/unit/test_http.py::test_blank_idempotency_key_is_rejected PASSED   [ 40%]
 tests/unit/test_http.py::test_database_outage_hides_sql PASSED           [ 41%]
 tests/unit/test_http.py::test_create_persists_single_row PASSED          [ 42%]
 tests/unit/test_netpolicy.py::test_private_and_credential_urls_are_rejected[http://127.0.0.1/hook] PASSED [ 43%]
-tests/unit/test_netpolicy.py::test_private_and_credential_urls_are_rejected[http://10.1.2.3/hook] PASSED [ 45%]
-tests/unit/test_netpolicy.py::test_private_and_credential_urls_are_rejected[http://192.168.0.5/hook] PASSED [ 46%]
-tests/unit/test_netpolicy.py::test_private_and_credential_urls_are_rejected[http://169.254.169.254/latest/meta-data] PASSED [ 47%]
-tests/unit/test_netpolicy.py::test_private_and_credential_urls_are_rejected[http://[::1]/hook] PASSED [ 48%]
-tests/unit/test_netpolicy.py::test_private_and_credential_urls_are_rejected[http://localhost/hook] PASSED [ 49%]
+tests/unit/test_netpolicy.py::test_private_and_credential_urls_are_rejected[http://10.1.2.3/hook] PASSED [ 44%]
+tests/unit/test_netpolicy.py::test_private_and_credential_urls_are_rejected[http://192.168.0.5/hook] PASSED [ 45%]
+tests/unit/test_netpolicy.py::test_private_and_credential_urls_are_rejected[http://169.254.169.254/latest/meta-data] PASSED [ 46%]
+tests/unit/test_netpolicy.py::test_private_and_credential_urls_are_rejected[http://[::1]/hook] PASSED [ 47%]
+tests/unit/test_netpolicy.py::test_private_and_credential_urls_are_rejected[http://localhost/hook] PASSED [ 48%]
 tests/unit/test_netpolicy.py::test_private_and_credential_urls_are_rejected[http://metadata.google.internal/computeMetadata/v1/] PASSED [ 50%]
 tests/unit/test_netpolicy.py::test_private_and_credential_urls_are_rejected[http://user:secret@example.com/hook] PASSED [ 51%]
 tests/unit/test_netpolicy.py::test_private_and_credential_urls_are_rejected[ftp://example.com/hook] PASSED [ 52%]
 tests/unit/test_netpolicy.py::test_public_url_is_allowed PASSED          [ 53%]
-tests/unit/test_netpolicy.py::test_private_url_is_allowed_when_flag_is_on PASSED [ 54%]
+tests/unit/test_netpolicy.py::test_hostname_that_resolves_to_private_ip_is_rejected PASSED [ 54%]
+tests/unit/test_netpolicy.py::test_private_url_is_allowed_when_flag_is_on PASSED [ 55%]
 tests/unit/test_outbox.py::test_publish_pending_marks_row_published PASSED [ 56%]
 tests/unit/test_outbox.py::test_publish_failure_leaves_row_pending PASSED [ 57%]
 tests/unit/test_outbox.py::test_published_row_stays_published_when_next_publish_fails PASSED [ 58%]
 tests/unit/test_payments.py::test_create_writes_payment_and_outbox PASSED [ 59%]
 tests/unit/test_payments.py::test_same_key_and_body_returns_existing_payment PASSED [ 60%]
 tests/unit/test_payments.py::test_same_key_and_different_body_conflicts PASSED [ 61%]
-tests/unit/test_payments.py::test_failed_commit_keeps_database_empty PASSED [ 62%]
-tests/unit/test_payments.py::test_get_missing_payment PASSED             [ 63%]
-tests/unit/test_pool.py::test_postgres_pool_is_bounded_and_checks_connections PASSED [ 64%]
-tests/unit/test_processing.py::test_success_updates_status_and_sends_webhook PASSED [ 65%]
+tests/unit/test_payments.py::test_failed_commit_keeps_database_empty PASSED [ 63%]
+tests/unit/test_payments.py::test_get_missing_payment PASSED             [ 64%]
+tests/unit/test_pool.py::test_postgres_pool_is_bounded_and_checks_connections PASSED [ 65%]
+tests/unit/test_processing.py::test_success_updates_status_and_sends_webhook PASSED [ 66%]
 tests/unit/test_processing.py::test_decline_marks_payment_failed PASSED  [ 67%]
 tests/unit/test_processing.py::test_webhook_failure_does_not_repeat_gateway PASSED [ 68%]
 tests/unit/test_processing.py::test_second_worker_does_not_call_gateway_while_claim_is_held PASSED [ 69%]
@@ -92,9 +93,9 @@ tests/unit/test_processing.py::test_missing_payment_is_permanent PASSED  [ 70%]
 tests/unit/test_publisher.py::test_outbox_publish_goes_to_payments_new PASSED [ 71%]
 tests/unit/test_publisher.py::test_retry_uses_exponential_queue_then_dlq PASSED [ 72%]
 tests/unit/test_retry.py::test_delay_doubles_each_attempt PASSED         [ 73%]
-tests/unit/test_retry.py::test_dead_letter_after_third_attempt PASSED    [ 74%]
-tests/unit/test_retry.py::test_retry_routing_key_matches_attempt PASSED  [ 75%]
-tests/unit/test_retry.py::test_read_attempt_defaults_to_zero PASSED      [ 76%]
+tests/unit/test_retry.py::test_dead_letter_after_third_attempt PASSED    [ 75%]
+tests/unit/test_retry.py::test_retry_routing_key_matches_attempt PASSED  [ 76%]
+tests/unit/test_retry.py::test_read_attempt_defaults_to_zero PASSED      [ 77%]
 tests/unit/test_schemas.py::test_accepts_payment_body PASSED             [ 78%]
 tests/unit/test_schemas.py::test_accepts_supported_currencies[RUB] PASSED [ 79%]
 tests/unit/test_schemas.py::test_accepts_supported_currencies[USD] PASSED [ 80%]
@@ -104,7 +105,7 @@ tests/unit/test_schemas.py::test_rejects_long_description PASSED         [ 83%]
 tests/unit/test_schemas.py::test_amount_lower_bound_is_one_cent PASSED   [ 84%]
 tests/unit/test_schemas.py::test_rejects_invalid_payment_body[overrides0] PASSED [ 85%]
 tests/unit/test_schemas.py::test_rejects_invalid_payment_body[overrides1] PASSED [ 86%]
-tests/unit/test_schemas.py::test_rejects_invalid_payment_body[overrides2] PASSED [ 87%]
+tests/unit/test_schemas.py::test_rejects_invalid_payment_body[overrides2] PASSED [ 88%]
 tests/unit/test_schemas.py::test_rejects_invalid_payment_body[overrides3] PASSED [ 89%]
 tests/unit/test_schemas.py::test_rejects_invalid_payment_body[overrides4] PASSED [ 90%]
 tests/unit/test_schemas.py::test_rejects_invalid_payment_body[overrides5] PASSED [ 91%]
@@ -126,19 +127,19 @@ INFO  [alembic.runtime.migration] Running upgrade  -> 0001_initial
 INFO  [alembic.runtime.migration] Running upgrade 0001_initial -> 0002_gateway_claim
 ------------------------------ Captured log setup ------------------------------
 INFO     testcontainers.core.container:container.py:248 Pulling image testcontainers/ryuk:0.8.1
-INFO     testcontainers.core.container:container.py:288 Container started: 7cce399fa32b
+INFO     testcontainers.core.container:container.py:288 Container started: 7c8a2088e013
 INFO     testcontainers.core.container:container.py:248 Pulling image rabbitmq:3.13-management-alpine
-INFO     testcontainers.core.container:container.py:288 Container started: 829a031b123b
+INFO     testcontainers.core.container:container.py:288 Container started: efdcf19a0160
 INFO     testcontainers.core.container:container.py:248 Pulling image postgres:16-alpine
-INFO     testcontainers.core.container:container.py:288 Container started: e3a1390570e7
+INFO     testcontainers.core.container:container.py:288 Container started: 7cbb795e60a4
 ______________ test_message_is_dead_lettered_after_three_attempts ______________
 ----------------------------- Captured stdout call -----------------------------
-2026-10-08 19:42:17,856 [32mINFO[0m     - payments | payments.new |            - `OnPaymentNew` waiting for messages
+2026-10-09 08:29:03,805 [32mINFO[0m     - payments | payments.new |            - `OnPaymentNew` waiting for messages
 ------------------------------ Captured log call -------------------------------
 INFO     faststream.access.rabbit:logging.py:103 `OnPaymentNew` waiting for messages
 _____________ test_queue_consumer_marks_success_and_calls_webhook ______________
 ----------------------------- Captured stdout call -----------------------------
-2026-10-08 19:42:18,788 [32mINFO[0m     - payments | payments.new |            - `OnPaymentNew` waiting for messages
+2026-10-09 08:29:04,769 [32mINFO[0m     - payments | payments.new |            - `OnPaymentNew` waiting for messages
 ------------------------------ Captured log call -------------------------------
 INFO     faststream.access.rabbit:logging.py:103 `OnPaymentNew` waiting for messages
 ________________________ test_downgrade_removes_tables _________________________
@@ -201,6 +202,7 @@ PASSED tests/unit/test_netpolicy.py::test_private_and_credential_urls_are_reject
 PASSED tests/unit/test_netpolicy.py::test_private_and_credential_urls_are_rejected[http://user:secret@example.com/hook]
 PASSED tests/unit/test_netpolicy.py::test_private_and_credential_urls_are_rejected[ftp://example.com/hook]
 PASSED tests/unit/test_netpolicy.py::test_public_url_is_allowed
+PASSED tests/unit/test_netpolicy.py::test_hostname_that_resolves_to_private_ip_is_rejected
 PASSED tests/unit/test_netpolicy.py::test_private_url_is_allowed_when_flag_is_on
 PASSED tests/unit/test_outbox.py::test_publish_pending_marks_row_published
 PASSED tests/unit/test_outbox.py::test_publish_failure_leaves_row_pending
@@ -243,4 +245,4 @@ PASSED tests/unit/test_webhook.py::test_webhook_returns_on_first_success
 PASSED tests/unit/test_webhook.py::test_webhook_retries_with_exponential_delay
 PASSED tests/unit/test_webhook.py::test_webhook_does_not_follow_redirects
 PASSED tests/unit/test_webhook.py::test_webhook_raises_after_exhausted_attempts
-============================= 91 passed in 13.76s ==============================
+============================= 92 passed in 14.87s ==============================
