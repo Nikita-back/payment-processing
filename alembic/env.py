@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import create_async_engine
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from app.models import Base
+from app.infrastructure.db.models import Base
 
 config = context.config
 if config.config_file_name is not None:

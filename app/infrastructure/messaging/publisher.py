@@ -1,7 +1,12 @@
 from faststream.rabbit import ExchangeType, RabbitBroker, RabbitExchange
 
-from app.retry import retry_routing_key, should_dead_letter
-from app.topology import DLQ_ROUTING_KEY, DLX_EXCHANGE, NEW_ROUTING_KEY, PAYMENTS_EXCHANGE
+from app.infrastructure.messaging.retry import retry_routing_key, should_dead_letter
+from app.infrastructure.messaging.topology import (
+    DLQ_ROUTING_KEY,
+    DLX_EXCHANGE,
+    NEW_ROUTING_KEY,
+    PAYMENTS_EXCHANGE,
+)
 
 
 class RabbitPublisher:

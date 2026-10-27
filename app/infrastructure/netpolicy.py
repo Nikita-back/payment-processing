@@ -2,7 +2,7 @@ import ipaddress
 import socket
 from urllib.parse import urlparse
 
-from app.errors import WebhookURLRejected
+from app.domain.errors import WebhookURLRejected
 
 _BLOCKED_HOSTS = frozenset(
     {
@@ -43,3 +43,11 @@ def _host_is_blocked(host: str) -> bool:
         return False
     addresses = {item[4][0] for item in infos}
     return any(not ipaddress.ip_address(address).is_global for address in addresses)
+
+
+class NetworkWebhookGuard:
+    def __init__(self, *, allow_private_networks: bool) -> None:
+        self._allow_private_networks = allow_private_networks
+
+    def ensure(self, url: str) -> None:
+        assert_webhook_url(url, allow_private_networks=self._allow_private_networks)

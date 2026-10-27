@@ -1,6 +1,13 @@
-from app.consumer import consumer_queue
-from app.retry import retry_delay_ms, retry_queue_name
-from app.topology import DLQ_QUEUE, DLX_EXCHANGE, NEW_QUEUE, PAYMENTS_EXCHANGE, main_queue_spec, queue_specs
+from app.infrastructure.messaging.consumer import consumer_queue
+from app.infrastructure.messaging.retry import retry_delay_ms, retry_queue_name
+from app.infrastructure.messaging.topology import (
+    DLQ_QUEUE,
+    DLX_EXCHANGE,
+    NEW_QUEUE,
+    PAYMENTS_EXCHANGE,
+    main_queue_spec,
+    queue_specs,
+)
 
 
 def test_topology_has_main_queue_dlq_and_retry_queues() -> None:

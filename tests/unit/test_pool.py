@@ -1,4 +1,4 @@
-from app.db import make_engine
+from app.infrastructure.db.engine import make_engine
 
 
 async def test_postgres_pool_is_bounded_and_checks_connections() -> None:

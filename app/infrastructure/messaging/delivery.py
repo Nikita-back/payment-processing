@@ -1,20 +1,14 @@
 import logging
 from uuid import UUID
 
-from app.errors import PermanentFailure
-from app.processing import PaymentProcessor
-from app.publisher import RabbitPublisher
-from app.retry import read_attempt
+from app.application.ports import AttemptPublisher
+from app.domain.errors import PermanentFailure
+from app.infrastructure.messaging.retry import read_attempt
 
 logger = logging.getLogger(__name__)
 
 
-async def handle_delivery(
-    payload: dict,
-    headers: dict | None,
-    processor: PaymentProcessor,
-    publisher: RabbitPublisher,
-) -> None:
+async def handle_delivery(payload: dict, headers: dict | None, processor, publisher: AttemptPublisher) -> None:
     attempt = read_attempt(headers)
     try:
         payment_id = UUID(str(payload["payment_id"]))

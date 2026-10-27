@@ -1,6 +1,6 @@
 from uuid import uuid4
 
-from app.gateway import PaymentGateway
+from app.infrastructure.gateway import PaymentGateway
 
 
 class SequenceRng:

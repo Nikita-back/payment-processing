@@ -1,4 +1,4 @@
-from app.retry import read_attempt, retry_delay_ms, retry_routing_key, should_dead_letter
+from app.infrastructure.messaging.retry import read_attempt, retry_delay_ms, retry_routing_key, should_dead_letter
 
 
 def test_delay_doubles_each_attempt() -> None:

@@ -1,7 +1,7 @@
 from uuid import uuid4
 
-from app.delivery import handle_delivery
-from app.errors import PaymentNotFoundError
+from app.domain.errors import PaymentNotFoundError
+from app.infrastructure.messaging.delivery import handle_delivery
 
 
 class Recorder:

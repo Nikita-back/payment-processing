@@ -1,7 +1,7 @@
 import pytest
 from sqlalchemy import func, select
 
-from app.models import Payment
+from app.infrastructure.db.models import PaymentModel
 from tests.helpers import HEADERS, payment_body
 
 
@@ -147,13 +147,13 @@ async def test_blank_idempotency_key_is_rejected(client) -> None:
     assert response.status_code == 400
 
 
-async def test_database_outage_hides_sql(client, monkeypatch) -> None:
+async def test_database_outage_hides_sql(client, application) -> None:
     from sqlalchemy.exc import OperationalError
 
     async def down(*args, **kwargs):
         raise OperationalError("SELECT api_key FROM secrets", {}, Exception("connection refused"))
 
-    monkeypatch.setattr("app.api.create_payment", down)
+    application.state.create_payment.execute = down
     response = await client.post(
         "/api/v1/payments",
         json=payment_body(),
@@ -173,5 +173,5 @@ async def test_create_persists_single_row(client, application) -> None:
     )
     session_factory = application.state.session_factory
     async with session_factory() as session:
-        count = await session.scalar(select(func.count()).select_from(Payment))
+        count = await session.scalar(select(func.count()).select_from(PaymentModel))
     assert count == 1

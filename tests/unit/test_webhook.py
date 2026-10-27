@@ -1,8 +1,8 @@
 import httpx
 import pytest
 
-from app.errors import WebhookDeliveryError
-from app.webhook import WebhookClient
+from app.domain.errors import WebhookDeliveryError
+from app.infrastructure.webhook import WebhookClient
 
 
 def scripted_transport(statuses: list[int]) -> tuple[httpx.MockTransport, list[float]]:
@@ -43,7 +43,7 @@ async def test_webhook_retries_with_exponential_delay() -> None:
 
 async def test_webhook_does_not_follow_redirects(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(
-        "app.netpolicy.socket.getaddrinfo",
+        "app.infrastructure.netpolicy.socket.getaddrinfo",
         lambda *args, **kwargs: [(2, 1, 6, "", ("93.184.216.34", 0))],
     )
     seen: list[str] = []

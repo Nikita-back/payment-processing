@@ -2,9 +2,10 @@ import pytest
 from httpx import ASGITransport, AsyncClient
 
 from app.config import Settings
-from app.db import make_engine, make_session_factory
+from app.infrastructure.db.engine import make_engine, make_session_factory
+from app.infrastructure.db.models import Base
+from app.infrastructure.db.unit_of_work import SqlAlchemyUnitOfWork
 from app.main import create_app
-from app.models import Base
 
 
 @pytest.fixture
@@ -15,6 +16,11 @@ async def session_factory():
     factory = make_session_factory(engine)
     yield factory
     await engine.dispose()
+
+
+@pytest.fixture
+def uow_factory(session_factory):
+    return lambda: SqlAlchemyUnitOfWork(session_factory)
 
 
 @pytest.fixture

@@ -3,7 +3,7 @@ from dataclasses import dataclass
 import aio_pika
 from aio_pika import ExchangeType
 
-from app.retry import retry_delay_ms, retry_queue_name, retry_routing_key
+from app.infrastructure.messaging.retry import retry_delay_ms, retry_queue_name, retry_routing_key
 
 PAYMENTS_EXCHANGE = "payments"
 DLX_EXCHANGE = "payments.dlx"

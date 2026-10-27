@@ -1,7 +1,7 @@
 import pytest
 from pydantic import ValidationError
 
-from app.schemas import PaymentCreate, PaymentDetails
+from app.api.schemas import PaymentCreate, PaymentDetails
 from tests.helpers import payment_body
 
 

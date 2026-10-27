@@ -8,6 +8,16 @@
 
 FastAPI, Pydantic v2, SQLAlchemy 2.0 (async), PostgreSQL, RabbitMQ, FastStream, Alembic, Docker Compose.
 
+## Архитектура
+
+Зависимости направлены к домену. Подробная карта — в `docs/architecture.md`.
+
+- `app/domain` — платёж и сообщение outbox. Смена статуса, захват обработки и проверка идемпотентного ключа — методы сущности.
+- `app/application` — сценарии создания, чтения, проведения и публикации outbox. Сценарий зависит от портов (репозиторий, Unit of Work, шлюз, webhook) и не видит сессию SQLAlchemy.
+- `app/infrastructure` — ORM-модели отдельно от сущностей, репозитории, Unit of Work, RabbitMQ, HTTP-клиент webhook, эмуляция шлюза.
+- `app/api` — схемы запроса и роутер модуля. Обработчик переводит тело в команду и вызывает сценарий. Допустимость webhook и пустой ключ идемпотентности решаются в сценарии создания.
+- `app/main.py` и `app/consumer.py` только собирают реализации портов.
+
 ## Запуск
 
 ```bash

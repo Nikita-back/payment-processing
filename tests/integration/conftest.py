@@ -12,9 +12,9 @@ from testcontainers.core.container import DockerContainer
 from testcontainers.core.wait_strategies import LogMessageWaitStrategy
 
 from app.config import Settings
-from app.db import make_engine
+from app.infrastructure.db.engine import make_engine
+from app.infrastructure.messaging.topology import declare_topology, queue_specs
 from app.main import create_app
-from app.topology import declare_topology, queue_specs
 
 ROOT = Path(__file__).resolve().parents[2]
 

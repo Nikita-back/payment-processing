@@ -10,6 +10,10 @@ class IdempotencyConflictError(Exception):
     pass
 
 
+class BlankIdempotencyKey(Exception):
+    pass
+
+
 class WebhookDeliveryError(Exception):
     pass
 

@@ -5,8 +5,8 @@ from urllib.parse import urlparse
 
 import httpx
 
-from app.errors import WebhookDeliveryError
-from app.netpolicy import assert_webhook_url
+from app.domain.errors import WebhookDeliveryError
+from app.infrastructure.netpolicy import assert_webhook_url
 
 logger = logging.getLogger(__name__)
 

@@ -1,6 +1,6 @@
-from app.publisher import RabbitPublisher
-from app.topology import DLQ_ROUTING_KEY, NEW_ROUTING_KEY
-from app.retry import retry_routing_key
+from app.infrastructure.messaging.publisher import RabbitPublisher
+from app.infrastructure.messaging.retry import retry_routing_key
+from app.infrastructure.messaging.topology import DLQ_ROUTING_KEY, NEW_ROUTING_KEY
 
 
 class FakeBroker:

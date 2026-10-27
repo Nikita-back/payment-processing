@@ -6,17 +6,25 @@
 
 Команда: `pytest -vv --tb=short -rA --log-cli-level=INFO`. В `pyproject.toml` включено `filterwarnings = ["error"]`: любое предупреждение Python роняет прогон.
 
-Итог в конце лога: `92 passed in 14.87s`. Секций `warnings summary` и строк `FAILED` нет. Секция `PASSES` перечисляет все 92 теста по одному.
+Итог в конце лога: `101 passed in 16.01s`. Секций `warnings summary` и строк `FAILED` нет. Секция `PASSES` перечисляет все 101 тест по одному.
 
 Готовность RabbitMQ ждёт строку `Server startup complete` в логе контейнера. Устаревший декоратор `@wait_container_is_ready` не импортируется, поэтому в логе нет `DeprecationWarning` и нет рукопожатий pika до старта брокера.
 
 В логе нет тел запросов с ключом API и нет текста SQL из обработчика `503`.
 
+## Слои
+
+Карта зависимостей — в `docs/architecture.md`.
+
+Доменная сущность платежа (`app/domain/payment.py`) сама меняет статус, захватывает обработку и сверяет отпечаток идемпотентного ключа. Сценарии в `app/application/` работают с портами репозитория и Unit of Work и не получают сессию SQLAlchemy. ORM-модели, репозитории и Unit of Work лежат в `app/infrastructure/db/`. Роутер объявлен в `app/api/router.py` на уровне модуля: обработчик собирает команду и вызывает сценарий. Пустой `Idempotency-Key` и запрет адреса webhook решает `CreatePayment`. Коды `400`, `404`, `409` и `422` ставят обработчики в `app/api/errors.py`, а не проверки внутри роута. `503` без текста SQL — обработчик `OperationalError` в `app/main.py`.
+
+Границы импортов проверяют `test_domain_has_no_frameworks`, `test_application_does_not_touch_sqlalchemy_or_http`, `test_router_does_not_decide_business_rules`. Смена статуса без базы — `test_finish_sets_terminal_status_once` и `test_second_claim_inside_lease_is_rejected`.
+
 ## Поля платежа
 
 | Требование | Где | Доказательство |
 |---|---|---|
-| Уникальный `payment_id` (UUID) | `app/payments.py`, `app/models.py` | `test_create_returns_accepted` проверяет UUID. `test_create_writes_payment_and_outbox` видит строку в БД. `test_create_and_get_payment` читает тот же id из PostgreSQL. `test_create_persists_single_row` — ровно одна строка на создание. |
+| Уникальный `payment_id` (UUID) | `app/domain/payment.py`, `app/infrastructure/db/models.py` | `test_create_returns_accepted` проверяет UUID. `test_create_writes_payment_and_outbox` видит строку в БД. `test_create_and_get_payment` читает тот же id из PostgreSQL. `test_create_persists_single_row` — ровно одна строка на создание. |
 | Сумма — десятичная, больше нуля, 2 знака | `Numeric(18, 2)`, `PaymentCreate.amount` | `test_amount_lower_bound_is_one_cent` принимает `0.01`. `test_rejects_invalid_payment_body[overrides2]` — `0`, `[overrides3]` — отрицательная, `[overrides4]` — три знака. `test_details_serialize_amount_with_two_decimals` отдаёт строку с двумя знаками. Check `amount > 0` в миграции `0001`. |
 | Валюта только `RUB` / `USD` / `EUR` | `Literal` в схеме, check в миграции | `test_accepts_supported_currencies` и `test_accepts_each_currency` по каждой валюте. `overrides0` — `GBP`, `overrides1` — `rub` в нижнем регистре. |
 | Описание | строка до 2000 символов, по умолчанию пустая | `test_accepts_payment_body`. `test_rejects_long_description` — 2001 символ. |
@@ -25,7 +33,7 @@
 | `idempotency_key` | уникальный индекс `ix_payments_idempotency_key` | `test_idempotent_replay_and_conflict`, `test_idempotency_on_postgres`, `test_concurrent_create_with_one_key`. Ключ со спецсимволами SQL хранится как данные: `test_idempotency_key_is_stored_as_data`. |
 | `webhook_url` | `AnyHttpUrl` плюс сетевой фильтр | Публичный URL: `test_public_url_is_allowed`. Не URL: `overrides5`. |
 | `created_at` в ответе создания | `PaymentAccepted` | `test_create_returns_accepted` — поле с таймзоной. |
-| `processed_at` после обработки | проставляется в `PaymentProcessor` | `test_success_updates_status_and_sends_webhook`, `test_queue_consumer_marks_success_and_calls_webhook`. |
+| `processed_at` после обработки | `Payment.finish` в сценарии `ProcessPayment` | `test_success_updates_status_and_sends_webhook`, `test_queue_consumer_marks_success_and_calls_webhook`. |
 
 Внутренние колонки `request_hash`, `webhook_sent_at`, `gateway_claimed_at` в ответ API не входят: `test_get_hides_internal_columns`.
 
@@ -84,7 +92,7 @@ Alembic `0001` создаёт `payments` и `outbox`, `0002` добавляет 
 
 ## Безопасность
 
-Фильтр webhook (`app/netpolicy.py`) по умолчанию запрещает не-http(s), userinfo в URL, `localhost`, `*.local`, хосты метаданных облака и любой неглобальный IP (частные сети, loopback, link-local, включая `169.254.169.254` и `::1`). Если DNS не ответил, имя остаётся допустимым, чтобы не резать внешние хосты из-за временного сбоя резолва. Если резолв вернул неглобальный адрес — отказ.
+Фильтр webhook (`app/infrastructure/netpolicy.py`) по умолчанию запрещает не-http(s), userinfo в URL, `localhost`, `*.local`, хосты метаданных облака и любой неглобальный IP (частные сети, loopback, link-local, включая `169.254.169.254` и `::1`). Если DNS не ответил, имя остаётся допустимым, чтобы не резать внешние хосты из-за временного сбоя резолва. Если резолв вернул неглобальный адрес — отказ.
 
 - Каждый запрещённый URL: параметризация `test_private_and_credential_urls_are_rejected` (9 случаев).
 - Имя, которое резолвится в публичный адрес, проходит: `test_public_url_is_allowed` (резолв подменён на `93.184.216.34`). Имя, которое резолвится в частный адрес, отклоняется: `test_hostname_that_resolves_to_private_ip_is_rejected`.
@@ -131,7 +139,9 @@ Alembic `0001` создаёт `payments` и `outbox`, `0002` добавляет 
 - `test_http`: создание, чтение, 401, 400, 409, 404, три валюты, SSRF, скрытые колонки, ключ как данные, пробельный ключ, 503 без SQL, одна строка
 - `test_netpolicy`: 9 запрещённых URL, публичный резолв, частный резолв, разрешение при флаге
 - `test_outbox`: публикация, сбой, частичная пачка
-- `test_payments`: запись, повтор, конфликт, откат commit, отсутствующий платёж
+- `test_layers`: домен и сценарии не импортируют SQLAlchemy и HTTP-фреймворки, роутер не проверяет webhook и пустой ключ
+- `test_payment_rules`: тот же отпечаток принимается, другой конфликтует, статус становится конечным один раз, повторный захват внутри аренды отклоняется
+- `test_payments`: запись, повтор, конфликт, откат commit, отсутствующий платёж, пустой ключ, отказ приватного webhook до вставки
 - `test_pool`: размер пула 10
 - `test_processing`: успех, отказ шлюза, webhook без повторного шлюза, захват, отсутствующий платёж
 - `test_publisher`: `payments.new` и переход retry → DLQ

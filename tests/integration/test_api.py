@@ -3,7 +3,7 @@ import asyncio
 import pytest
 from sqlalchemy import func, select
 
-from app.models import Outbox, Payment
+from app.infrastructure.db.models import OutboxModel, PaymentModel
 from tests.helpers import HEADERS, payment_body
 
 pytestmark = pytest.mark.integration
@@ -55,8 +55,8 @@ async def test_idempotency_on_postgres(api) -> None:
     assert first.json()["payment_id"] == second.json()["payment_id"]
     assert conflict.status_code == 409
     async with application.state.session_factory() as session:
-        payments = await session.scalar(select(func.count()).select_from(Payment))
-        outbox = await session.scalar(select(func.count()).select_from(Outbox))
+        payments = await session.scalar(select(func.count()).select_from(PaymentModel))
+        outbox = await session.scalar(select(func.count()).select_from(OutboxModel))
     assert payments == 1
     assert outbox == 1
 
@@ -73,7 +73,7 @@ async def test_concurrent_create_with_one_key(api) -> None:
     assert second.status_code == 202
     assert first.json()["payment_id"] == second.json()["payment_id"]
     async with application.state.session_factory() as session:
-        payments = await session.scalar(select(func.count()).select_from(Payment))
-        outbox = await session.scalar(select(func.count()).select_from(Outbox))
+        payments = await session.scalar(select(func.count()).select_from(PaymentModel))
+        outbox = await session.scalar(select(func.count()).select_from(OutboxModel))
     assert payments == 1
     assert outbox == 1

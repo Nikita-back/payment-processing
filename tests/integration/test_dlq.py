@@ -3,9 +3,9 @@ from uuid import uuid4
 import pytest
 from faststream.rabbit import RabbitBroker
 
-from app.consumer import register_consumer
-from app.publisher import RabbitPublisher
-from app.topology import DLQ_QUEUE, NEW_QUEUE
+from app.infrastructure.messaging.consumer import register_consumer
+from app.infrastructure.messaging.publisher import RabbitPublisher
+from app.infrastructure.messaging.topology import DLQ_QUEUE, NEW_QUEUE
 from tests.helpers import wait_for
 from tests.integration.conftest import queue_depth
 

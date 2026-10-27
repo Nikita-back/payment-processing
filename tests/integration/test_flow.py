@@ -1,16 +1,18 @@
 import pytest
 from faststream.rabbit import RabbitBroker
 
-from app.consumer import register_consumer
-from app.db import make_session_factory
-from app.gateway import PaymentGateway
-from app.outbox import publish_pending
-from app.payments import create_payment, get_payment
-from app.processing import PaymentProcessor
-from app.publisher import RabbitPublisher
-from app.schemas import PaymentCreate
-from app.webhook import WebhookClient
-from tests.helpers import HEADERS, payment_body, wait_for
+from app.application.create_payment import CreatePayment
+from app.application.get_payment import GetPayment
+from app.application.process_payment import ProcessPayment
+from app.application.publish_outbox import PublishOutbox
+from app.infrastructure.db.engine import make_session_factory
+from app.infrastructure.db.unit_of_work import SqlAlchemyUnitOfWork
+from app.infrastructure.gateway import PaymentGateway
+from app.infrastructure.messaging.consumer import register_consumer
+from app.infrastructure.messaging.publisher import RabbitPublisher
+from app.infrastructure.netpolicy import NetworkWebhookGuard
+from app.infrastructure.webhook import WebhookClient
+from tests.helpers import HEADERS, payment_body, payment_request, wait_for
 from tests.http_probe import HttpProbe
 
 pytestmark = pytest.mark.integration
@@ -22,13 +24,12 @@ async def _noop(_: float) -> None:
 
 async def test_processor_decline_and_webhook_retry_over_http(engine) -> None:
     factory = make_session_factory(engine)
+    uow_factory = lambda: SqlAlchemyUnitOfWork(factory)
     async with HttpProbe([500, 500, 200]) as probe:
-        async with factory() as session:
-            payment = await create_payment(
-                session,
-                PaymentCreate.model_validate(payment_body(webhook_url=probe.url)),
-                "flow-1",
-            )
+        async with uow_factory() as uow:
+            payment = await CreatePayment(
+                NetworkWebhookGuard(allow_private_networks=True)
+            ).execute(uow, payment_request(webhook_url=probe.url), "flow-1")
         gateway = PaymentGateway(
             min_delay_seconds=0,
             max_delay_seconds=0,
@@ -41,9 +42,9 @@ async def test_processor_decline_and_webhook_retry_over_http(engine) -> None:
             timeout_seconds=2,
             allow_private_networks=True,
         )
-        await PaymentProcessor(factory, gateway, webhook).process(payment.id)
-        async with factory() as session:
-            stored = await get_payment(session, payment.id)
+        await ProcessPayment(uow_factory, gateway, webhook).process(payment.id)
+        async with uow_factory() as uow:
+            stored = await GetPayment().execute(uow, payment.id)
     assert stored.status == "failed"
     assert stored.webhook_sent_at is not None
     assert probe.calls == 3
@@ -60,7 +61,7 @@ async def test_queue_consumer_marks_success_and_calls_webhook(api, rabbitmq_url)
             headers={**HEADERS, "Idempotency-Key": "flow-2"},
         )
         payment_id = created.json()["payment_id"]
-        factory = application.state.session_factory
+        uow_factory = application.state.uow_factory
         broker = RabbitBroker(rabbitmq_url)
         publisher = RabbitPublisher(broker, max_attempts=3)
         gateway = PaymentGateway(
@@ -75,11 +76,11 @@ async def test_queue_consumer_marks_success_and_calls_webhook(api, rabbitmq_url)
             timeout_seconds=2,
             allow_private_networks=True,
         )
-        register_consumer(broker, PaymentProcessor(factory, gateway, webhook), publisher)
+        register_consumer(broker, ProcessPayment(uow_factory, gateway, webhook), publisher)
         await broker.start()
         try:
-            async with factory() as session:
-                assert await publish_pending(session, publisher, batch_size=10) == 1
+            async with uow_factory() as uow:
+                assert await PublishOutbox().run(uow, publisher, batch_size=10) == 1
 
             async def finished() -> bool:
                 response = await client.get(f"/api/v1/payments/{payment_id}", headers=HEADERS)
